@@ -1,0 +1,152 @@
+<?php
+
+namespace App\Livewire;
+
+use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
+use App\Models\Enrollment;
+use App\Models\Lesson;
+use App\Models\Assignment;
+use App\Models\Submission;
+use App\Models\User;
+
+#[Layout('components.layouts.portal')]
+class PortalDashboard extends Component
+{
+    public $student;
+    public $activeCourses = [];
+    public $feedItems = [];
+    public $upcomingDeadlines = [];
+    public $userBalance = 0;
+    
+    // Quiz State
+    public $quizActive = false;
+    public $quizTimeRemaining = 600; // 10 minutes
+    public $quizAnswers = [];
+    public $quizSubmitted = false;
+
+    // Parent Mode State
+    public $isParent = false;
+    public $children = [];
+
+    // Real LMS Data
+    public $assignments = [];
+    public $grades = [];
+
+    public function mount()
+    {
+        $user = Auth::user() ?? User::role('student')->first() ?? User::first();
+        
+        $this->isParent = $user->hasRole('parent'); // Assuming Spatie Roles or similar logic works here
+        
+        if ($this->isParent) {
+            $this->student = $user->children()->first() ?? clone $user; 
+            // Mock children for UI mapping
+            $this->children = [
+                ['id' => 1, 'name' => 'Zainab Ahmed', 'initials' => 'ZA', 'grade' => 'Primary Student'],
+                ['id' => 2, 'name' => 'Sara Ahmed', 'initials' => 'SA', 'grade' => 'Student'],
+            ];
+        } else {
+            $this->student = $user;
+        }
+
+        $this->loadDashboardData();
+    }
+
+    protected function loadDashboardData()
+    {
+        if (!$this->student) return;
+
+        // 1. Get Enrollments
+        $enrollments = Enrollment::with(['courseSection.course'])
+            ->where('user_id', $this->student->id)
+            ->where('status', 'active')
+            ->get();
+
+        $this->activeCourses = $enrollments->map(function ($enrollment) {
+            return [
+                'id' => $enrollment->courseSection->course->id ?? null,
+                'name' => $enrollment->courseSection->course->name ?? 'Unknown Course',
+                'section' => $enrollment->courseSection->name ?? 'Unknown Section',
+                'progress' => rand(10, 90), 
+                'next_class' => 'Sunday @ 9:00 PM' 
+            ];
+        });
+
+        // 2. Reverse Activity Feed Algorithm
+        // Gather recent lessons, grades, and announcements
+        $feed = collect();
+
+        // Let's add mock feed items to ensure UI isn't empty if DB has 0 items
+        $feed->push([
+            'type' => 'lesson',
+            'title' => 'New Lesson: The Pillars of Salah (Part 2)',
+            'time' => 'Just now',
+            'description' => 'Teacher Amina published a new video lesson in Hanafi Fiqh.',
+            'action_label' => 'Watch Video',
+            'action_route' => 'courses',
+            'timestamp' => now()->timestamp
+        ]);
+
+        $feed->push([
+            'type' => 'grade',
+            'title' => 'Quiz Graded: Quiz 2 — Verb Conjugation',
+            'time' => '2 hours ago',
+            'description' => 'Score: 80%. "Good work — keep practicing your verb patterns!"',
+            'action_label' => 'View Feedback',
+            'action_route' => 'grades',
+            'timestamp' => now()->subHours(2)->timestamp
+        ]);
+
+        $this->feedItems = $feed->sortByDesc('timestamp')->values()->toArray();
+
+        // 3. Upcoming Deadlines & Dynamic Assignments
+        $courseIds = $enrollments->pluck('courseSection.course_id')->filter();
+        
+        $this->assignments = Assignment::whereIn('course_id', $courseIds)
+            ->with(['course', 'lesson'])
+            ->latest()
+            ->get();
+
+        $this->upcomingDeadlines = $this->assignments->map(function($assignment) {
+            return [
+                'date' => \Carbon\Carbon::parse($assignment->created_at)->format('d'),
+                'month' => \Carbon\Carbon::parse($assignment->created_at)->format('M'),
+                'title' => $assignment->title,
+                'due_in' => $assignment->time_limit_minutes ? 'Time Limit: ' . $assignment->time_limit_minutes . ' mins' : 'No strict deadline',
+                'color' => '#ca8a04'
+            ];
+        })->take(3)->toArray();
+
+        // 4. Grades Tracking
+        $this->grades = Submission::where('user_id', $this->student->id)
+            ->with('assignment')
+            ->latest()
+            ->get();
+
+        $this->userBalance = 0; // Can be hooked into Cashier balance/Invoice totals later
+    }
+
+    public function startQuiz()
+    {
+        $this->quizActive = true;
+        $this->quizSubmitted = false;
+        $this->quizAnswers = [];
+    }
+
+    public function submitQuiz()
+    {
+        // Evaluate answers (mock processing)
+        $this->quizSubmitted = true;
+        $this->quizActive = false;
+        
+        // Notify frontend to show toast & return to dashboard
+        $this->dispatch('quiz-submitted');
+    }
+
+    public function render()
+    {
+        return view('livewire.portal-dashboard');
+    }
+}
