@@ -16,7 +16,7 @@ class PublicEvents extends Component
 
     public function render()
     {
-        $query = Event::query()->where('status', 'published');
+        $query = Event::published();
         
         if ($this->type !== 'all') {
             $query->where('pricing_type', $this->type);

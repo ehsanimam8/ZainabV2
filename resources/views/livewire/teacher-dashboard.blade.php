@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zainab Center – Instructor Portal</title>
+<div>
     <link rel="stylesheet" href="{{ asset("css/style.css") }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -21,8 +16,7 @@
         .att-absent  { background: #fee2e2; color: #dc2626; }
         .att-excused { background: #fef9c3; color: #854d0e; }
     </style>
-</head>
-<body class="teacher">
+<div class="teacher" style="min-height: 100vh; background-color: #f0f9f9;">
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar teacher-sidebar" id="sidebar" style="background: var(--color-deep-navy);">
@@ -1387,5 +1381,5 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
     </script>
-</body>
-</html>
+</div>
+</div>

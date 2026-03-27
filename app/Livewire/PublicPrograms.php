@@ -14,7 +14,7 @@ class PublicPrograms extends Component
 
     public function render()
     {
-        $query = Program::query()->where('status', 'active');
+        $query = Program::active();
 
         if ($this->category !== 'all') {
             $query->where('category', $this->category);

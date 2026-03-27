@@ -13,13 +13,13 @@
                 <div class="step {{ $step == $i ? 'active' : '' }} {{ $step > $i ? 'completed' : '' }}">
                     <div class="step-circle">{{ $i }}</div>
                     <div class="step-label">
-                        @match($i)
+                        @switch($i)
                             @case(1) Start @break
                             @case(2) Who @break
                             @case(3) Program @break
                             @case(4) Profile @break
                             @case(5) Payment @break
-                        @endmatch
+                        @endswitch
                     </div>
                 </div>
                 @endfor

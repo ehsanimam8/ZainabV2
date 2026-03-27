@@ -6,8 +6,8 @@ use App\Models\Program;
 use App\Models\Event;
 
 Route::get('/', function () {
-    $programs = Program::where('status', 'active')->take(3)->get();
-    $events = Event::where('status', 'published')->orderBy('start_date', 'asc')->take(3)->get();
+    $programs = Program::active()->take(3)->get();
+    $events = Event::published()->orderBy('start_date', 'asc')->take(3)->get();
     return view('welcome', compact('programs', 'events'));
 });
 Route::get('/admin-static', function () { return view('admin'); });

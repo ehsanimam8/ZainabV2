@@ -40,4 +40,9 @@ class Program extends Model
     {
         return LogOptions::defaults()->logAll();
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'Active');
+    }
 }

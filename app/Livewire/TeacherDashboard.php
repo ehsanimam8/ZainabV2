@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Course;
+use App\Models\CourseSection;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,6 +57,6 @@ class TeacherDashboard extends Component
             'sections' => $sections,
             'students' => $students,
             'metrics' => $metrics,
-        ])->layout('components.layouts.bare', ['title' => 'Instructor Portal']);
+        ])->layout('components.layouts.teacher', ['title' => 'Instructor Portal']);
     }
 }

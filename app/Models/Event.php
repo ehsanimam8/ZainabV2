@@ -30,4 +30,9 @@ class Event extends Model
         'registration_closes_at' => 'datetime',
         'ticket_price' => 'decimal:2',
     ];
+
+    public function scopePublished($query)
+    {
+        return $query->whereIn('status', ['Registration Open', 'Coming Soon', 'published', 'Published']);
+    }
 }
