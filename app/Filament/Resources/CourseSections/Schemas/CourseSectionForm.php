@@ -22,12 +22,12 @@ class CourseSectionForm
                             ->placeholder('e.g. Arabic 101 — Mon/Wed Section')
                             ->columnSpanFull(),
                         Select::make('course_id')->label('Course')
-                            ->options(\App\Models\Course::pluck('name', 'id'))
+                            ->relationship('course', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Select::make('lead_teacher_id')->label('Lead Teacher')
-                            ->options(\App\Models\User::role('instructor')->pluck('name', 'id'))
+                            ->relationship('leadTeacher', 'name')
                             ->searchable(),
                     ])->columns(2),
 

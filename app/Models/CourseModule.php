@@ -9,4 +9,14 @@ class CourseModule extends Model
     use \Illuminate\Database\Eloquent\Concerns\HasUuids;
 
     protected $guarded = [];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }
