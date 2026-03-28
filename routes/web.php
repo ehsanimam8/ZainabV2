@@ -8,7 +8,9 @@ use App\Models\Event;
 Route::get('/', function () {
     $programs = Program::active()->take(3)->get();
     $events = Event::published()->orderBy('start_date', 'asc')->take(3)->get();
-    return view('welcome', compact('programs', 'events'));
+    $totalPrograms = Program::active()->count();
+    $totalEvents = Event::published()->count();
+    return view('welcome', compact('programs', 'events', 'totalPrograms', 'totalEvents'));
 });
 Route::get('/admin-static', function () { return view('admin'); });
 Route::get('/portal', \App\Livewire\PortalDashboard::class);

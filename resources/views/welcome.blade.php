@@ -178,7 +178,7 @@
                 <h2 class="section-title" style="margin-bottom:0;">Explore Our Programs</h2>
                 <a href="{{ url('/programs') }}" style="font-size:14px;font-weight:700;color:var(--color-primary);text-decoration:none;white-space:nowrap;margin-left:24px;">View All Programs →</a>
             </div>
-            <p style="text-align:center;color:#718096;font-size:14px;margin:8px 0 48px;">Showing 3 of 8 programs</p>
+            <p style="text-align:center;color:#718096;font-size:14px;margin:8px 0 48px;">Showing {{ $programs->count() }} of {{ $totalPrograms }} programs</p>
             <div class="programs-grid">
                 @forelse($programs as $program)
                 <div class="program-card">
@@ -244,7 +244,7 @@
                 <a href="{{ url('/events') }}" style="font-size:14px;font-weight:700;color:var(--color-secondary, #A85D88);text-decoration:none;white-space:nowrap;margin-left:24px;">View All Events →</a>
             </div>
             <p style="color:#6B7280;max-width:560px;margin:0 0 0;">Join our community events — open lectures, graduation ceremonies, Ramadan programs, and more.</p>
-            <p style="font-size:13px;color:#9CA3AF;margin:6px 0 0;">Showing 3 of 9 upcoming events</p>
+            <p style="font-size:13px;color:#9CA3AF;margin:6px 0 0;">Showing {{ $events->count() }} of {{ $totalEvents }} upcoming events</p>
 
             <div class="events-grid">
                 @forelse($events as $event)
@@ -291,7 +291,7 @@
             </div>
 
             <div style="text-align:center;margin-top:40px;">
-                <a href="{{ url('/events') }}" style="display:inline-block;padding:13px 32px;border:2px solid var(--color-secondary,#A85D88);color:var(--color-secondary,#A85D88);border-radius:30px;font-size:14px;font-weight:700;text-decoration:none;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#A85D88';this.style.color='white';" onmouseout="this.style.background='';this.style.color='#A85D88';">See All 9 Upcoming Events →</a>
+                <a href="{{ url('/events') }}" style="display:inline-block;padding:13px 32px;border:2px solid var(--color-secondary,#A85D88);color:var(--color-secondary,#A85D88);border-radius:30px;font-size:14px;font-weight:700;text-decoration:none;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#A85D88';this.style.color='white';" onmouseout="this.style.background='';this.style.color='#A85D88';">See All {{ $totalEvents }} Upcoming Events →</a>
             </div>
         </div>
     </section>
