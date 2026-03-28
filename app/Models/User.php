@@ -15,9 +15,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+
 #[Fillable(['name', 'first_name', 'last_name', 'phone', 'gender', 'metadata', 'email', 'password', 'household_id', 'independent_login'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasUuids, HasRoles, LogsActivity;
@@ -44,6 +47,12 @@ class User extends Authenticatable
                 $user->name = trim($user->first_name . ' ' . $user->last_name);
             }
         });
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Allow access if the user has a super_admin role, or just loosely check their email domain if needed.
+        return $this->hasRole('super_admin') || str_ends_with($this->email, '@example.com');
     }
 
     public function household()
