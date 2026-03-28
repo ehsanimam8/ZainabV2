@@ -30,4 +30,14 @@ class Course extends Model
     {
         return LogOptions::defaults()->logAll();
     }
+
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class);
+    }
+    
+    public function materials(): HasMany
+    {
+        return $this->hasMany(CourseMaterial::class);
+    }
 }

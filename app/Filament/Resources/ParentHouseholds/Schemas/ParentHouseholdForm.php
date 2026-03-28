@@ -14,61 +14,35 @@ class ParentHouseholdForm
     {
         return $schema
             ->components([
-                Section::make('Primary Contact')
+                Section::make('Household Details')
                     ->schema([
-                        TextInput::make('first_name')->required()
-                            ->label('First Name *')
-                            ->placeholder('e.g. Omar')
-                            ->dehydrated(false),
-                        TextInput::make('last_name')->required()
-                            ->label('Last Name *')
-                            ->placeholder('e.g. Al-Rashid')
-                            ->dehydrated(false),
-                        TextInput::make('email')->email()->required()
-                            ->label('Email Address *')
-                            ->placeholder('parent@email.com')
-                            ->dehydrated(false),
-                        TextInput::make('mobile_phone')->tel()->required()
-                            ->label('Mobile Phone *')
-                            ->placeholder('+1 (555) 000-0000')
-                            ->dehydrated(false),
-                        TextInput::make('home_address')
-                            ->label('Home Address')
-                            ->placeholder('123 Main St, City, State ZIP')
-                            ->columnSpanFull()
-                            ->dehydrated(false),
-                    ])->columns(2),
-
-                Section::make('Children Linked to this Household')
-                    ->schema([
-                        Textarea::make('student_names')
-                            ->label('Student Names (Existing or New)')
-                            ->helperText('You can link students to this household later from the Students view.')
-                            ->placeholder("List the names of children enrolled or to be enrolled. Separate by line.\ne.g. Zainab Al-Rashid (Age 10)\nHassan Al-Rashid (Age 8)")
-                            ->rows(4)
-                            ->columnSpanFull()
-                            ->dehydrated(false),
+                        TextInput::make('name')
+                            ->label('Household / Family Name')
+                            ->required()
+                            ->placeholder('e.g. The Al-Rashid Family')
+                            ->columnSpanFull(),
                     ]),
 
-                Section::make('Communication Preferences')
+                Section::make('Family Members')
                     ->schema([
-                        Select::make('preferred_language')->label('Preferred Language')
-                            ->options([
-                                'English' => 'English',
-                                'Arabic' => 'Arabic',
-                                'Urdu' => 'Urdu',
-                                'French' => 'French',
-                            ])->default('English')
-                            ->dehydrated(false),
-                        Select::make('contact_preference')->label('Contact Preference')
-                            ->options([
-                                'Email' => 'Email',
-                                'SMS / Text' => 'SMS / Text',
-                                'WhatsApp' => 'WhatsApp',
-                                'Phone Call' => 'Phone Call',
-                            ])->default('Email')
-                            ->dehydrated(false),
-                    ])->columns(2),
+                        \Filament\Forms\Components\Repeater::make('users')
+                            ->relationship('users')
+                            ->label('Parents & Children')
+                            ->schema([
+                                TextInput::make('first_name')->required()->columnSpan(1),
+                                TextInput::make('last_name')->required()->columnSpan(1),
+                                TextInput::make('email')->email()->unique(table: 'users', column: 'email', ignoreRecord: true)->columnSpan(1),
+                                TextInput::make('phone')->tel()->columnSpan(1),
+                                Select::make('roles')
+                                    ->relationship('roles', 'name')
+                                    ->multiple()
+                                    ->preload()
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(2)
+                            ->createItemButtonLabel('Add Family Member')
+                            ->itemLabel(fn (array $state): ?string => $state['first_name'] ?? null),
+                    ]),
             ]);
     }
 }

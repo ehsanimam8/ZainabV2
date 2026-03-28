@@ -44,6 +44,7 @@ class AssignmentResource extends Resource
     {
         return [
             'index' => ListAssignments::route('/'),
+            'view' => Pages\ViewAssignment::route('/{record}'),
         ];
     }
 

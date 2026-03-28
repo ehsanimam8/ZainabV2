@@ -1,5 +1,5 @@
 <div>
-    <link rel="stylesheet" href="{{ asset("css/style.css") }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body.teacher { background-color: #f0f9f9; }
@@ -1171,7 +1171,7 @@
         <span id="toast-msg">Saved</span>
     </div>
 
-    <script src="{{ asset("js/app.js") }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script>
         lucide.createIcons();
 

@@ -19,3 +19,10 @@ Route::get('/teacher', \App\Livewire\TeacherDashboard::class);
 Route::get('/donate', \App\Livewire\DonationFlow::class);
 Route::get('/events', \App\Livewire\PublicEvents::class);
 Route::get('/programs', \App\Livewire\PublicPrograms::class);
+
+Route::get('/certificates/{id}', function ($id) {
+    $enrollment = \App\Models\Enrollment::with(['user', 'program'])->findOrFail($id);
+    if ($enrollment->status !== 'Completed') abort(403, 'Certificate not earned yet.');
+    
+    return view('certificates.download', compact('enrollment'));
+})->name('certificates.download');

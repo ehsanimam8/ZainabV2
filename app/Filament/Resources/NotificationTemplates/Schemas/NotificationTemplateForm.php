@@ -35,7 +35,7 @@ class NotificationTemplateForm
                             ->label('Email Body Content')
                             ->columnSpanFull(),
                         TagsInput::make('variables')
-                            ->helperText('Defined backend merge tags (e.g. amount, first_name) available for this template.')
+                            ->helperText('Available merge tags (e.g. first_name, amount). In the body, use double curly braces: {{ first_name }}.')
                             ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->default(true)

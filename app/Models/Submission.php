@@ -10,6 +10,13 @@ class Submission extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'answers_data' => 'array',
+        'submitted_at' => 'datetime',
+        'graded_at' => 'datetime',
+        'earned_points' => 'decimal:2',
+    ];
+
     public function assignment()
     {
         return $this->belongsTo(Assignment::class);

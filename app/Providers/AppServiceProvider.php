@@ -34,6 +34,28 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
+        \App\Models\Enrollment::updated(function (\App\Models\Enrollment $enrollment) {
+            if ($enrollment->isDirty('status')) {
+                $statusMap = [
+                    'Completed' => 'enrollment_completed',
+                    'Suspended' => 'enrollment_suspended',
+                ];
+
+                if (array_key_exists($enrollment->status, $statusMap)) {
+                    $student = $enrollment->user;
+                    $program = $enrollment->program;
+                    
+                    if ($student) {
+                        \App\Services\CommunicationService::sendTemplate($statusMap[$enrollment->status], $student, [
+                            'first_name' => $student->first_name ?? $student->name ?? 'Student',
+                            'program_name' => $program ? $program->name : 'our program',
+                            'portal_url' => url('/portal'),
+                        ]);
+                    }
+                }
+            }
+        });
+
         \App\Models\Submission::updated(function (\App\Models\Submission $submission) {
             if ($submission->wasChanged('grade_status') && $submission->grade_status === 'Graded') {
                 $student = $submission->user;

@@ -45,8 +45,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->renderHook(
-                \Filament\View\PanelsRenderHook::HEAD_START,
-                fn (): string => '<link rel="stylesheet" href="/css/custom-filament.css?v=3">'
+                \Filament\View\PanelsRenderHook::HEAD_END,
+                fn (): string => '<link rel="stylesheet" href="/css/custom-filament.css?v=4">'
             )
             ->widgets([
                 \App\Filament\Widgets\AdminDashboardOverview::class,

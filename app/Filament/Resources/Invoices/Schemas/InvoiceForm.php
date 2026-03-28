@@ -14,8 +14,19 @@ class InvoiceForm
     {
         return $schema
             ->components([
-                Select::make('user_id')->options(\App\Models\User::pluck('email', 'id'))->searchable()->required(),
-                Select::make('enrollment_id')->options(\App\Models\Enrollment::with(['user', 'program'])->get()->mapWithKeys(fn($e) => [$e->id => ($e->user->email ?? 'Unknown') . ' - ' . ($e->program->name ?? 'Unknown')]))->searchable(),
+                Select::make('user_id')
+                    ->label('Bill To (Parent/Student)')
+                    ->relationship('user', 'email')
+                    ->getOptionLabelFromRecordUsing(fn (\App\Models\User $record) => "{$record->first_name} {$record->last_name} (" . ($record->household ? $record->household->name : $record->email) . ")")
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Select::make('enrollment_id')
+                    ->label('Related Enrollment (Optional)')
+                    ->relationship('enrollment', 'id')
+                    ->getOptionLabelFromRecordUsing(fn (\App\Models\Enrollment $record) => ($record->user->first_name ?? 'Unknown') . ' - ' . ($record->program->name ?? 'Unknown'))
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('amount')->numeric()->prefix('$')->required(),
                 Select::make('status')
                     ->options([

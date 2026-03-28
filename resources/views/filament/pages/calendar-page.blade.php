@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-                <section id="view-calendar" class="content-view hidden">
+                <section id="view-calendar" class="content-view">
                     <div class="flex justify-between items-center" style="margin-bottom: var(--space-6);">
                         <div>
                             <h1 class="ui-page-title">Calendar</h1>

@@ -56,6 +56,7 @@ class AssignmentsTable
                 //
             ])
             ->actions([
+                \Filament\Tables\Actions\ViewAction::make(),
                 EditAction::make()->slideOver(),
             ])
             ->bulkActions([

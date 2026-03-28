@@ -33,6 +33,13 @@ class EnrollmentsTable
                 //
             ])
             ->actions([
+                \Filament\Tables\Actions\Action::make('download_certificate')
+                    ->label('Certificate')
+                    ->icon('heroicon-o-academic-cap')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->status === 'Completed')
+                    ->url(fn ($record) => route('certificates.download', $record->id))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->bulkActions([

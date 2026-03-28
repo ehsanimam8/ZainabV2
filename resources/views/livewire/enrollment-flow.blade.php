@@ -1,4 +1,156 @@
 <div>
+    <style>
+        body { background: #F8F5E8; }
+        .enrollment-container {
+            max-width: 760px;
+            margin: 40px auto 80px;
+            padding: 0 20px;
+        }
+        .enrollment-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+        }
+        /* Stepper */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 15px; left: 0; right: 0;
+            height: 2px;
+            background: #E2E8F0;
+            z-index: 1;
+        }
+        .stepper-progress {
+            position: absolute;
+            top: 15px; left: 0;
+            height: 2px;
+            background: var(--color-primary);
+            z-index: 2;
+            transition: width 0.4s ease;
+        }
+        .step {
+            position: relative; z-index: 3;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 8px;
+            width: 80px;
+        }
+        .step-circle {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #E2E8F0;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #718096;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .step.active .step-circle {
+            border-color: var(--color-primary);
+            background: var(--color-primary);
+            color: white;
+        }
+        .step.completed .step-circle {
+            border-color: var(--color-primary);
+            background: var(--color-primary);
+            color: white;
+        }
+        .step-label {
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: #718096; text-align: center;
+        }
+        .step.active .step-label { color: var(--color-primary); }
+        /* Steps */
+        .enroll-step { display: none; animation: fadeIn 0.35s ease; }
+        .enroll-step.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Form elements */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 700;
+            margin-bottom: 8px; color: #1A2F4A;
+        }
+        .form-group label .required { color: #DC2626; margin-left: 2px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px 16px;
+            border: 1px solid #E2E8F0; border-radius: 10px;
+            font-family: inherit; font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(27,107,114,0.12);
+        }
+        /* Enrollee type selector */
+        .type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .type-card {
+            border: 2px solid #E2E8F0; border-radius: 14px;
+            padding: 20px; cursor: pointer; transition: all 0.2s;
+            text-align: center;
+        }
+        .type-card:hover { border-color: var(--color-accent); }
+        .type-card.selected {
+            border-color: var(--color-primary);
+            background: rgba(27,107,114,0.04);
+        }
+        .type-card i { color: var(--color-primary); margin-bottom: 10px; }
+        .type-card h3 { font-size: 15px; margin-bottom: 4px; }
+        .type-card p { font-size: 12px; color: #718096; margin: 0; }
+        /* Program selection */
+        .program-selection { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        .select-card {
+            border: 2px solid #E2E8F0; border-radius: 14px;
+            padding: 18px; cursor: pointer; transition: all 0.2s;
+        }
+        .select-card:hover { border-color: var(--color-accent); }
+        .select-card.selected {
+            border-color: var(--color-primary);
+            background: rgba(27,107,114,0.04);
+        }
+        .select-card h3 { font-size: 14px; margin-bottom: 4px; }
+        .select-card p { font-size: 12px; color: #718096; margin: 0 0 8px; }
+        .select-card .price { font-size: 15px; font-weight: 700; color: var(--color-primary); }
+        /* Returning banner */
+        .returning-banner {
+            background: rgba(27,107,114,0.07); border: 1px solid rgba(27,107,114,0.2);
+            border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+            display: none;
+        }
+        .returning-banner h4 { font-size: 14px; margin-bottom: 4px; color: var(--color-primary); }
+        .returning-banner p { font-size: 13px; color: #718096; margin: 0; }
+        /* Nav buttons */
+        .btn-row { display: flex; gap: 12px; margin-top: 32px; }
+        .btn-back {
+            padding: 12px 24px; background: #EDF2F7; color: #4A5568;
+            border: none; border-radius: 10px; font-family: inherit;
+            font-size: 14px; font-weight: 700; cursor: pointer; transition: filter 0.2s;
+        }
+        .btn-next {
+            flex: 1; padding: 14px 24px; background: var(--color-primary);
+            color: white; border: none; border-radius: 10px;
+            font-family: inherit; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: filter 0.2s;
+        }
+        .btn-next:hover, .btn-back:hover { filter: brightness(0.93); }
+        /* Confirmation */
+        .confirm-icon {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: #DCFCE7; color: #16A34A;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+        }
+    </style>
     <div style="text-align: center; padding: 28px 20px 0;">
         <a href="{{ url('/') }}" class="logo">Zainab Center</a>
     </div>

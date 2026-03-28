@@ -27,6 +27,11 @@ class Payment extends Model
     {
         return $this->belongsTo(Enrollment::class);
     }
+    
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
