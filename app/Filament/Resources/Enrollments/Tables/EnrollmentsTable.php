@@ -33,7 +33,7 @@ class EnrollmentsTable
                 //
             ])
             ->actions([
-                \Filament\Tables\Actions\Action::make('download_certificate')
+                \Filament\Actions\Action::make('download_certificate')
                     ->label('Certificate')
                     ->icon('heroicon-o-academic-cap')
                     ->color('success')

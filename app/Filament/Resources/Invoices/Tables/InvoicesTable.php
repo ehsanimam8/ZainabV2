@@ -29,7 +29,7 @@ class InvoicesTable
                 //
             ])
             ->actions([
-                \Filament\Tables\Actions\Action::make('record_payment')
+                \Filament\Actions\Action::make('record_payment')
                     ->label('Record Payment')
                     ->icon('heroicon-o-currency-dollar')
                     ->color('success')
@@ -68,7 +68,7 @@ class InvoicesTable
                         
                         \Filament\Notifications\Notification::make()->title('Payment Recorded!')->success()->send();
                     }),
-                \Filament\Tables\Actions\Action::make('send_reminder')
+                \Filament\Actions\Action::make('send_reminder')
                     ->label('Send Reminder')
                     ->icon('heroicon-o-envelope')
                     ->color('warning')
@@ -88,7 +88,7 @@ class InvoicesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    \Filament\Tables\Actions\BulkAction::make('send_reminders')
+                    \Filament\Actions\BulkAction::make('send_reminders')
                         ->label('Send Reminders to All Unpaid')
                         ->icon('heroicon-o-paper-airplane')
                         ->requiresConfirmation()

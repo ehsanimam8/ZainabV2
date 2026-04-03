@@ -5,9 +5,9 @@ namespace App\Filament\Resources\Students\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\BulkActionGroup;
 
 class StudentsTable
 {
@@ -43,8 +43,8 @@ class StudentsTable
                 //
             ])
             ->actions([
-                \Filament\Tables\Actions\ViewAction::make(),
-                \Filament\Tables\Actions\EditAction::make()->slideOver(),
+                \Filament\Actions\ViewAction::make(),
+                \Filament\Actions\EditAction::make()->slideOver(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
