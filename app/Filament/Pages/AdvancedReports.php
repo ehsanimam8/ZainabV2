@@ -10,11 +10,11 @@ use Carbon\Carbon;
 
 class AdvancedReports extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-chart-bar-square';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar-square';
 
-    protected static string $view = 'filament.pages.advanced-reports';
+    protected string $view = 'filament.pages.advanced-reports';
 
-    protected static ?string $navigationGroup = 'Management';
+    protected static string|\UnitEnum|null $navigationGroup = 'Management';
 
     protected static ?string $title = 'Advanced Reports';
 

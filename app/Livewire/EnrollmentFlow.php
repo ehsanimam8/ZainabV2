@@ -200,8 +200,15 @@ class EnrollmentFlow extends Component
 
     public function render()
     {
+        $programsQuery = Program::active();
+        
+        // If a program is already pre-selected (via URL or earlier steps), make sure it's included
+        if ($this->program_id) {
+            $programsQuery->orWhere('id', $this->program_id);
+        }
+
         return view('livewire.enrollment-flow', [
-            'programs' => Program::active()->get()
+            'programs' => $programsQuery->get()
         ]);
     }
 }

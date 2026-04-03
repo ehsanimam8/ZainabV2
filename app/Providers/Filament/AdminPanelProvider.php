@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             ->colors([
                 'primary' => '#1B6B72', // Deep Teal
@@ -34,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
                 'info' => '#1A2F4A', // Deep Navy
                 'success' => '#16A34A',
                 'warning' => '#C28E18', // Burnt Gold
-                'gray' => Color::Gray,
+                'gray' => Color::Slate,
             ])
             ->font('Inter')
             ->brandName('Zainab Center')

@@ -11,11 +11,11 @@ use Carbon\Carbon;
 
 class AttendanceTracker extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static string $view = 'filament.pages.attendance-tracker';
+    protected string $view = 'filament.pages.attendance-tracker';
 
-    protected static ?string $navigationGroup = 'LMS';
+    protected static string|\UnitEnum|null $navigationGroup = 'LMS';
 
     protected static ?string $title = 'Attendance Tracker';
 

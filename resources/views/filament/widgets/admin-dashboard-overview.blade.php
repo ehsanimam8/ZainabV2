@@ -1,28 +1,10 @@
 <x-filament::widget>
     {{-- We will inject the HTML dashboard mockup styles and content here --}}
     <style>
-        :root {
-            --color-deep-teal: #1B6B72;
-            --color-deep-navy: #1A2F4A;
-            --color-mauve-rose: #A85D88;
-            --color-warm-ivory: #F8F7F4;
-            --color-burnt-gold: #C28E18;
-            --color-body-gray: #4B5563;
-            --color-light-gray: #F3F4F6;
-            --color-mid-gray: #E5E7EB;
-            --space-2: 8px;
-            --space-4: 16px;
-            --space-6: 24px;
-            --space-8: 32px;
-        }
-        
         /* Dashboard Container Constraints */
         .custom-dash-wrapper {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-warm-ivory);
-            padding: 24px;
-            border-radius: 12px;
-            color: var(--color-deep-navy);
+            color: #1A2F4A;
         }
 
         .custom-dash-wrapper .card {
@@ -30,7 +12,7 @@
             border-radius: 12px;
             padding: 24px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            border: 1px solid var(--color-mid-gray);
+            border: 1px solid #E5E7EB;
         }
 
         .custom-dash-wrapper .stats-grid {
@@ -44,7 +26,7 @@
             background: white;
             padding: 20px;
             border-radius: 12px;
-            border-left: 4px solid var(--color-deep-teal);
+            border-left: 4px solid #1B6B72;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             transition: transform 0.2s;
         }
@@ -56,7 +38,7 @@
         .custom-dash-wrapper .stat-label {
             font-size: 13px;
             font-weight: 600;
-            color: var(--color-body-gray);
+            color: #4B5563;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -64,9 +46,9 @@
         .custom-dash-wrapper .stat-value {
             font-size: 32px;
             font-weight: 800;
-            color: var(--color-deep-navy);
+            color: #1A2F4A;
             margin-top: 8px;
-            font-family: 'Inter';
+            font-family: 'Playfair Display', serif;
         }
 
         .custom-dash-wrapper .quick-actions-grid {
@@ -79,7 +61,7 @@
             background: white;
             padding: 16px 12px;
             border-radius: 12px;
-            border: 1px solid var(--color-mid-gray);
+            border: 1px solid #E5E7EB;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -91,14 +73,14 @@
         }
 
         .custom-dash-wrapper .action-card:hover {
-            border-color: var(--color-deep-teal);
+            border-color: #1B6B72;
             background: #f0fdfa;
         }
 
         .custom-dash-wrapper .action-card span {
             font-size: 11px;
             font-weight: 600;
-            color: var(--color-body-gray);
+            color: #4B5563;
         }
 
         .custom-dash-wrapper .flex { display: flex; }
@@ -109,23 +91,22 @@
     </style>
 
     <div class="custom-dash-wrapper">
-        <div class="flex justify-between items-center" style="margin-bottom: var(--space-6);">
+        <div class="flex justify-between items-center" style="margin-bottom: 24px;">
             <div>
-                <h1 style="font-size: 28px; font-weight: 800; font-family: 'Inter';">Dashboard</h1>
-                <p style="color: var(--color-body-gray);">Welcome back, Administrator.</p>
+                <p style="color: #4B5563;">Welcome back, Administrator.</p>
             </div>
         </div>
 
         <!-- Admin Profile Card -->
         <div class="card flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <div style="width: 64px; height: 64px; border-radius: 8px; background: var(--color-deep-teal); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
+                <div style="width: 64px; height: 64px; border-radius: 8px; background: #1B6B72; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
                     AD
                 </div>
                 <div>
                     <h2 style="font-size: 20px; font-family: 'Inter'; font-weight: 700; margin:0;">Admin User</h2>
-                    <p style="color: var(--color-body-gray); font-size: 14px; margin:0;">Administrator at Zainab Center</p>
-                    <div class="flex gap-4" style="margin-top: 4px; font-size: 13px; color: var(--color-body-gray);">
+                    <p style="color: #4B5563; font-size: 14px; margin:0;">Administrator at Zainab Center</p>
+                    <div class="flex gap-4" style="margin-top: 4px; font-size: 13px; color: #4B5563;">
                         <span>admin@example.com</span>
                         <span>Main Campus</span>
                     </div>
@@ -147,22 +128,22 @@
                 </div>
                 <div class="stat-value">48</div>
             </div>
-            <div class="stat-card" style="border-left-color: var(--color-burnt-gold);">
+            <div class="stat-card" style="border-left-color: #C28E18;">
                 <div class="flex justify-between items-start">
                     <span class="stat-label">Active Courses</span>
                 </div>
                 <div class="stat-value">32</div>
             </div>
-            <div class="stat-card" style="border-left-color: var(--color-mauve-rose);">
+            <div class="stat-card" style="border-left-color: #A85D88;">
                 <div class="flex justify-between items-start">
                     <span class="stat-label">Pending Apps</span>
                 </div>
-                <div class="stat-value" style="color: var(--color-mauve-rose);">12</div>
+                <div class="stat-value" style="color: #A85D88;">12</div>
             </div>
         </div>
 
         <!-- Quick Actions Grid -->
-        <h3 style="font-family: 'Inter'; font-weight: 700; font-size: 16px; margin-bottom: var(--space-4); margin-top: var(--space-8);">⚡ Quick Actions</h3>
+        <h3 style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; margin-bottom: 16px; margin-top: 32px;">⚡ Quick Actions</h3>
         <div class="quick-actions-grid">
             <div class="action-card">
                 <div style="font-size:24px;">👤</div>

@@ -17,9 +17,9 @@ class CmsPageResource extends Resource
 {
     protected static ?string $model = CmsPage::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
 
-    protected static ?string $navigationGroup = 'Website Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Website Content';
     
     protected static ?string $modelLabel = 'CMS Page';
 

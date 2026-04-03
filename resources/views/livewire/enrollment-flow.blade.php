@@ -264,8 +264,14 @@
                     @foreach($programs as $program)
                     <div class="select-card {{ $program_id == $program->id ? 'selected' : '' }}" wire:click="selectProgram('{{ $program->id }}')">
                         <h3>{{ $program->name }}</h3>
-                        <p>{{ Str::words(strip_tags($program->description), 8) }}</p>
-                        <div class="price">${{ $program->monthly_fee ?? $program->registration_fee }} / term</div>
+                        <p>{{ $program->description ? Str::words(strip_tags($program->description), 12) : 'A comprehensive program covering foundational Islamic knowledge.' }}</p>
+                        <div class="price">
+                            @if($program->monthly_fee || $program->registration_fee)
+                                ${{ number_format($program->monthly_fee ?? $program->registration_fee, 2) }} / term
+                            @else
+                                Free Enrollment
+                            @endif
+                        </div>
                     </div>
                     @endforeach
                 </div>

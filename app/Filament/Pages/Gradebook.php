@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class Gradebook extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
 
-    protected static string $view = 'filament.pages.gradebook';
+    protected string $view = 'filament.pages.gradebook';
 
-    protected static ?string $navigationGroup = 'LMS';
+    protected static string|\UnitEnum|null $navigationGroup = 'LMS';
 
     protected static ?string $title = 'Gradebook';
 

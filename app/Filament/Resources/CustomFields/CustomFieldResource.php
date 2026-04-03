@@ -17,9 +17,9 @@ class CustomFieldResource extends Resource
 {
     protected static ?string $model = CustomField::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bars-3-bottom-right';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bars-3-bottom-right';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
 
     public static function form(Schema $schema): Schema
     {

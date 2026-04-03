@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    /* Soften shadows to match custom UI */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Background Color matching Warm Ivory */
+body {
+    background-color: #F8F5E8 !important;
+}
+
+/* Sidebar Styles matching Deep Navy */
+.fi-sidebar {
+    background-color: #1A2F4A !important;
+}
+.fi-sidebar-item-label, .fi-sidebar-group-label, .fi-sidebar-item-icon {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+.fi-sidebar-item-active > a, .fi-sidebar-item-active > a .fi-sidebar-item-label, .fi-sidebar-item-active > a .fi-sidebar-item-icon {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Typography Overrides */
+h1, h2, h3, h4, 
+.fi-header-heading, 
+.fi-wi-stats-overview-stat-value,
+.fi-modal-heading {
+    font-family: 'Playfair Display', serif !important;
+}
+
+/* Match the exact border radius and shadow on cards */
+.fi-ta-record, .fi-wi-stats-overview-stat, .fi-section, .fi-modal-window {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+    border: none !important;
+}
+
+/* Base Button Overrides for exact Mockup feel */
+.fi-btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Primary Button flattening and correct #1B6B72 */
+.fi-btn-color-primary,
+.fi-btn-color-primary.fi-color-primary {
+    background-color: #1B6B72 !important;
+    color: white !important;
+}
+.fi-btn-color-primary:hover,
+.fi-btn-color-primary.fi-color-primary:hover {
+    background-color: #145459 !important;
+}
+

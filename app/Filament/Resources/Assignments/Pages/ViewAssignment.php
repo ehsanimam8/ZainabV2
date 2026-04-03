@@ -13,7 +13,7 @@ class ViewAssignment extends ViewRecord
 {
     protected static string $resource = AssignmentResource::class;
 
-    protected static string $view = 'filament.resources.assignments.pages.view-assignment';
+    protected string $view = 'filament.resources.assignments.pages.view-assignment';
 
     protected function getViewData(): array
     {
