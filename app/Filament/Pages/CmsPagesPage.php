@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
-use LaraZeus\Sky\Models\Post;
+use App\Models\CmsPage;
 
 class CmsPagesPage extends Page
 {
@@ -15,7 +15,7 @@ class CmsPagesPage extends Page
     protected function getViewData(): array
     {
         return [
-            'cmsPages' => Post::where('post_type', 'page')->orderBy('created_at', 'desc')->get()
+            'cmsPages' => CmsPage::orderBy('created_at', 'desc')->get()
         ];
     }
 }
