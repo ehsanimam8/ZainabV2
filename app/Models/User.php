@@ -60,6 +60,12 @@ class User extends Authenticatable implements FilamentUser
         return $this->belongsTo(Household::class);
     }
 
+    public function children()
+    {
+        return $this->hasMany(User::class, 'household_id', 'household_id')
+                    ->where('id', '!=', $this->id);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->logAll();

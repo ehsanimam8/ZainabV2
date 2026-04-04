@@ -33,7 +33,19 @@ class EnrollmentsTable
                 //
             ])
             ->actions([
-                \Filament\Actions\Action::make('download_certificate')
+                \Filament\Tables\Actions\Action::make('evaluate')
+                    ->label('Evaluate Status')
+                    ->icon('heroicon-o-calculator')
+                    ->color('warning')
+                    ->visible(fn ($record) => $record->status !== 'Completed')
+                    ->action(function ($record) {
+                        dispatch(new \App\Jobs\EvaluateStudentCompletions($record->id));
+                        \Filament\Notifications\Notification::make()
+                            ->title('Evaluation Queued')
+                            ->success()
+                            ->send();
+                    }),
+                \Filament\Tables\Actions\Action::make('download_certificate')
                     ->label('Certificate')
                     ->icon('heroicon-o-academic-cap')
                     ->color('success')

@@ -448,34 +448,27 @@
                 </div>
 
                 <div class="flex gap-4" style="margin-bottom: var(--space-8);">
-                    <div class="card active"
-                        style="border: 2px solid var(--color-primary-portal); flex: 1; cursor: pointer;">
+                    @foreach($children as $child)
+                    <div class="card {{ $student->id === $child['id'] ? 'active' : '' }}"
+                        wire:click="switchChild('{{ $child['id'] }}')"
+                        style="border: {{ $student->id === $child['id'] ? '2px solid var(--color-primary-portal)' : '1px solid var(--color-mid-gray)' }}; flex: 1; cursor: pointer; {{ $student->id === $child['id'] ? '' : 'opacity: 0.7;' }}">
                         <div class="flex items-center gap-4">
                             <div
-                                style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary-portal); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                                ZA</div>
+                                style="width: 48px; height: 48px; border-radius: 50%; background: {{ $student->id === $child['id'] ? 'var(--color-primary-portal)' : 'var(--color-mid-gray)' }}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                {{ $child['initials'] }}</div>
                             <div>
-                                <h4 style="font-family: 'Inter';">Zainab Ahmed</h4>
-                                <p style="font-size: 12px; color: var(--color-body-gray);">Primary Student</p>
+                                <h4 style="font-family: 'Inter';">{{ $child['name'] }}</h4>
+                                <p style="font-size: 12px; color: var(--color-body-gray);">{{ $child['grade'] }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="card"
-                        style="border: 1px solid var(--color-mid-gray); flex: 1; cursor: pointer; opacity: 0.7;">
-                        <div class="flex items-center gap-4">
-                            <div
-                                style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-mid-gray); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                                SA</div>
-                            <div>
-                                <h4 style="font-family: 'Inter';">Sara Ahmed</h4>
-                                <p style="font-size: 12px; color: var(--color-body-gray);">Student</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card"
-                        style="border: 1px dashed var(--color-primary-portal); flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-primary-portal); font-weight: 700;">
+                    @endforeach
+                    <a href="{{ route('enroll') }}" class="card" style="text-decoration:none;" >
+                    <div
+                        style="border: 1px dashed var(--color-primary-portal); flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-primary-portal); font-weight: 700; height: 100%;">
                         + Enroll Another Child
                     </div>
+                    </a>
                 </div>
 
                 <div class="card">

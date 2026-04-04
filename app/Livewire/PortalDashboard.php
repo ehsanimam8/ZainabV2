@@ -41,14 +41,28 @@ class PortalDashboard extends Component
         $this->isParent = $user->hasRole('parent'); // Assuming Spatie Roles or similar logic works here
         
         if ($this->isParent) {
+            $this->children = collect($user->children)->map(function ($child) {
+                return [
+                    'id' => $child->id, 
+                    'name' => $child->first_name . ' ' . $child->last_name, 
+                    'initials' => substr($child->first_name, 0, 1) . substr($child->last_name, 0, 1), 
+                    'grade' => 'Student'
+                ];
+            })->toArray();
+
             $this->student = $user->children()->first() ?? clone $user; 
-            // Mock children for UI mapping
-            $this->children = [
-                ['id' => 1, 'name' => 'Zainab Ahmed', 'initials' => 'ZA', 'grade' => 'Primary Student'],
-                ['id' => 2, 'name' => 'Sara Ahmed', 'initials' => 'SA', 'grade' => 'Student'],
-            ];
         } else {
             $this->student = $user;
+        }
+
+        $this->loadDashboardData();
+    }
+
+    public function switchChild($childId)
+    {
+        if ($this->isParent) {
+            $this->student = User::find($childId);
+            $this->loadDashboardData();
         }
 
         $this->loadDashboardData();

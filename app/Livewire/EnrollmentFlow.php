@@ -161,12 +161,21 @@ class EnrollmentFlow extends Component
                 }
             }
 
+            // Ensure the Parent has a Household binding
+            if (!$user->household_id && $this->enrollee_type === 'child') {
+                $household = \App\Models\Household::create([
+                    'name' => $user->last_name . ' Family',
+                ]);
+                $user->update(['household_id' => $household->id]);
+            }
+
             // 2. Identify who the actual student is
             $studentUserId = $user->id;
             
             if ($this->enrollee_type === 'child') {
-                // We need to create the child user
+                // We need to create the child user under the parent's household
                 $child = User::create([
+                    'household_id' => $user->household_id,
                     'first_name' => $this->child_first_name,
                     'last_name' => $this->child_last_name,
                     'email' => strtolower($this->child_first_name) . '.' . time() . '@dependent.local',
@@ -180,6 +189,11 @@ class EnrollmentFlow extends Component
                 $child->assignRole('student');
                 $studentUserId = $child->id;
             }
+
+            // Magic Link routing: Ensure email always goes to the Purchaser (Parent or Self)
+            dispatch(new \App\Jobs\ProcessCommunicationTrigger('welcome-magic-link', $user->id, [
+                'login_url' => url('/portal'),
+            ]));
 
             Enrollment::create([
                 'user_id' => $studentUserId,

@@ -18,10 +18,22 @@ class PaymentEventSubscriber
             $user = User::where('stripe_id', $customerStripeId)->first();
             
             if ($user) {
+                $amountDue = number_format($event->payload['data']['object']['amount_due'] / 100, 2);
+
                 dispatch(new ProcessCommunicationTrigger('payment-failed-day-1', $user->id, [
-                    'amount_due' => '$' . number_format($event->payload['data']['object']['amount_due'] / 100, 2),
+                    'amount_due' => '$' . $amountDue,
                     'invoice_url' => $event->payload['data']['object']['hosted_invoice_url'] ?? '#',
                 ]));
+
+                // Fire Inward Facing Admin Notification!
+                $admin = User::role('super_admin')->first() ?? User::first();
+                if ($admin) {
+                    \Filament\Notifications\Notification::make()
+                        ->title('Action Required: Payment Defaulted')
+                        ->body("A tuition iteration of \${$amountDue} failed to process for student {$user->email}.")
+                        ->danger()
+                        ->sendToDatabase($admin);
+                }
             }
         }
 
