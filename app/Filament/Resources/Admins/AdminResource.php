@@ -19,9 +19,11 @@ class AdminResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'People';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $modelLabel = 'Admin User';
 
@@ -46,8 +48,6 @@ class AdminResource extends Resource
     {
         return [
             'index' => ListAdmins::route('/'),
-            'create' => CreateAdmin::route('/create'),
-            'edit' => EditAdmin::route('/{record}/edit'),
         ];
     }
 

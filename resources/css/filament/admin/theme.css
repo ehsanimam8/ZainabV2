@@ -1,63 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
-@theme {
-    /* Soften shadows to match custom UI */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-/* Background Color matching Warm Ivory */
-body {
-    background-color: #F8F5E8 !important;
-}
-
-/* Sidebar Styles matching Deep Navy */
-.fi-sidebar {
-    background-color: #1A2F4A !important;
-}
-.fi-sidebar-item-label, .fi-sidebar-group-label, .fi-sidebar-item-icon {
-    color: rgba(255, 255, 255, 0.7) !important;
-}
-.fi-sidebar-item-active > a, .fi-sidebar-item-active > a .fi-sidebar-item-label, .fi-sidebar-item-active > a .fi-sidebar-item-icon {
-    color: white !important;
-    background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
 /* Typography Overrides */
-h1, h2, h3, h4, 
-.fi-header-heading, 
-.fi-wi-stats-overview-stat-value,
-.fi-modal-heading {
+.fi-header-heading,
+.fi-widgets-header,
+h1, h2, h3, .fi-ta-header-heading {
     font-family: 'Playfair Display', serif !important;
 }
 
-/* Match the exact border radius and shadow on cards */
-.fi-ta-record, .fi-wi-stats-overview-stat, .fi-section, .fi-modal-window {
+/* Background Color Override to Warm Ivory */
+.fi-body, body, .fi-layout {
+    background-color: #F8F5E8 !important;
+}
+
+/* Softer Shadows and 12px Border Radii */
+.fi-ta-record,
+.fi-wi-stats-overview-stat,
+.fi-input,
+.fi-main-sidebar,
+.fi-panel,
+.fi-section {
     border-radius: 12px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
-    border: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    border-color: rgba(26, 47, 74, 0.05) !important;
 }
 
-/* Base Button Overrides for exact Mockup feel */
-.fi-btn {
-    border-radius: 8px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
+.fi-ta-record {
+    background-color: #ffffff;
+    margin-bottom: 0.5rem;
 }
 
-/* Primary Button flattening and correct #1B6B72 */
-.fi-btn-color-primary,
-.fi-btn-color-primary.fi-color-primary {
-    background-color: #1B6B72 !important;
-    color: white !important;
-}
-.fi-btn-color-primary:hover,
-.fi-btn-color-primary.fi-color-primary:hover {
-    background-color: #145459 !important;
+/* Dashboard Quick Actions custom widget setup styles */
+.qa-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
 }
 
+.qa-card {
+    border-radius: 12px;
+    background-color: white;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(26, 47, 74, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.qa-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.qa-icon-wrapper {
+    background-color: rgba(27, 107, 114, 0.1);
+    color: #1B6B72;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}

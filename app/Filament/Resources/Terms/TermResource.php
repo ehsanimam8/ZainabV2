@@ -18,9 +18,7 @@ class TermResource extends Resource
 {
     protected static ?string $model = Term::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendar;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Academic';
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Schema $schema): Schema
     {

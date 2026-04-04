@@ -35,10 +35,45 @@ class LessonForm
                             ->default('video')
                             ->label('Lesson Type')
                             ->dehydrated(false),
-                        Textarea::make('content')
-                            ->label('Description / Learning Objectives')
-                            ->placeholder('What will students learn in this lesson?')
-                            ->columnSpanFull(),
+                        \Filament\Forms\Components\Builder::make('content')
+                            ->label('Lesson Content / Quiz Builder')
+                            ->columnSpanFull()
+                            ->blocks([
+                                \Filament\Forms\Components\Builder\Block::make('text')
+                                    ->label('Rich Text / Description')
+                                    ->schema([
+                                        \Filament\Forms\Components\RichEditor::make('body')->label('Text')->required(),
+                                    ])->icon('heroicon-o-document-text'),
+                                \Filament\Forms\Components\Builder\Block::make('multiple_choice')
+                                    ->label('Multiple Choice Question')
+                                    ->schema([
+                                        TextInput::make('question')->label('Question')->required(),
+                                        \Filament\Forms\Components\Repeater::make('options')
+                                            ->schema([
+                                                TextInput::make('option_text')->required(),
+                                                Toggle::make('is_correct')->label('Is Correct Answer?'),
+                                            ])
+                                            ->columns(2)
+                                            ->addActionLabel('Add Option')
+                                            ->defaultItems(4),
+                                    ])->icon('heroicon-o-bars-4'),
+                                \Filament\Forms\Components\Builder\Block::make('true_false')
+                                    ->label('True / False Question')
+                                    ->schema([
+                                        TextInput::make('question')->label('Statement')->required(),
+                                        \Filament\Forms\Components\Radio::make('correct_answer')
+                                            ->options([
+                                                'true' => 'True',
+                                                'false' => 'False',
+                                            ])->required(),
+                                    ])->icon('heroicon-o-check-circle'),
+                                \Filament\Forms\Components\Builder\Block::make('short_answer')
+                                    ->label('Short Answer Question')
+                                    ->schema([
+                                        TextInput::make('question')->label('Question Prompt')->required(),
+                                        TextInput::make('expected_keyword')->label('Expected Keywords (Optional)'),
+                                    ])->icon('heroicon-o-pencil-square'),
+                            ]),
                     ])->columns(2),
 
                 \Filament\Schemas\Components\Section::make('Content & Settings')

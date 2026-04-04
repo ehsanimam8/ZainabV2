@@ -18,8 +18,7 @@ class CourseModuleResource extends Resource
 {
     protected static ?string $model = CourseModule::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolder;
-    protected static string|\UnitEnum|null $navigationGroup = 'LMS';
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $recordTitleAttribute = 'name';
 

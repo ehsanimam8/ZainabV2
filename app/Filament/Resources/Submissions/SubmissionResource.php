@@ -18,9 +18,10 @@ class SubmissionResource extends Resource
 {
     protected static ?string $model = Submission::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedInboxArrowDown;
-    protected static string|\UnitEnum|null $navigationGroup = 'LMS';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-trophy';
+    protected static string | \UnitEnum | null $navigationGroup = 'LMS';
     protected static ?string $navigationLabel = 'Gradebook';
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'id';
 

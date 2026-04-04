@@ -18,9 +18,7 @@ class CourseSectionResource extends Resource
 {
     protected static ?string $model = CourseSection::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Academic';
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Schema $schema): Schema
     {

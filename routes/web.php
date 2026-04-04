@@ -13,12 +13,16 @@ Route::get('/', function () {
     return view('welcome', compact('programs', 'events', 'totalPrograms', 'totalEvents'));
 });
 Route::get('/admin-static', function () { return view('admin'); });
-Route::get('/portal', \App\Livewire\PortalDashboard::class);
-Route::get('/enroll', \App\Livewire\EnrollmentFlow::class);
-Route::get('/teacher', \App\Livewire\TeacherDashboard::class);
-Route::get('/donate', \App\Livewire\DonationFlow::class);
-Route::get('/events', \App\Livewire\PublicEvents::class);
-Route::get('/programs', \App\Livewire\PublicPrograms::class);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/portal', \App\Livewire\PortalDashboard::class)->name('portal.dashboard');
+    Route::get('/portal/course/{sectionId}', \App\Livewire\CourseViewer::class)->name('portal.course-viewer');
+    Route::get('/teacher', \App\Livewire\TeacherDashboard::class)->name('teacher.dashboard');
+});
+
+Route::get('/enroll', \App\Livewire\EnrollmentFlow::class)->name('enroll');
+Route::get('/donate', \App\Livewire\DonationFlow::class)->name('donate');
+Route::get('/events', \App\Livewire\PublicEvents::class)->name('events');
+Route::get('/programs', \App\Livewire\PublicPrograms::class)->name('programs');
 
 Route::get('/certificates/{id}', function ($id) {
     $enrollment = \App\Models\Enrollment::with(['user', 'program'])->findOrFail($id);

@@ -18,9 +18,13 @@ class ContactResource extends Resource
 {
     protected static ?string $model = Contact::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-user-group';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'People';
+
+    protected static ?int $navigationSort = 4;
+
+    protected static ?string $navigationLabel = 'Parents / Contacts';
 
     public static function form(Schema $schema): Schema
     {

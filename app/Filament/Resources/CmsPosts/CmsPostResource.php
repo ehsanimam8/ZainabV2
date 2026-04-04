@@ -17,9 +17,11 @@ class CmsPostResource extends Resource
 {
     protected static ?string $model = CmsPost::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-pencil-square';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-newspaper';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Content';
+    protected static string | \UnitEnum | null $navigationGroup = 'Content';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationLabel = 'Posts & Blog';
     
     protected static ?string $modelLabel = 'Blog Post';
 

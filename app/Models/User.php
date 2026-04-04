@@ -23,7 +23,7 @@ use Filament\Panel;
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasUuids, HasRoles, LogsActivity;
+    use HasFactory, Notifiable, HasUuids, HasRoles, LogsActivity, \Laravel\Cashier\Billable;
 
     /**
      * Get the attributes that should be cast.

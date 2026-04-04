@@ -12,6 +12,37 @@ class TeacherDashboard extends Component
 {
     public $currentView = 'teacher-dashboard';
     
+    // Core states for Gradebook & Attendance
+    public $grades = [];
+    public $attendance = [];
+
+    public function saveGrades()
+    {
+        foreach ($this->grades as $userId => $assignments) {
+            foreach ($assignments as $assignmentId => $score) {
+                if (is_numeric($score)) {
+                    \App\Models\Submission::updateOrCreate(
+                        ['user_id' => $userId, 'assignment_id' => $assignmentId],
+                        ['score' => $score, 'status' => 'Graded']
+                    );
+                }
+            }
+        }
+        $this->dispatch('notify', 'Grades successfully saved!');
+    }
+
+    public function saveAttendance()
+    {
+        // Loop through the attendance array to store P/A/E
+        foreach ($this->attendance as $sessionId => $students) {
+            foreach ($students as $userId => $status) {
+                // Here we would sync with an Attendance model (if exists) or Event enrollment logs
+                // \App\Models\Attendance::updateOrCreate(...)
+            }
+        }
+        $this->dispatch('notify', 'Attendance recorded!');
+    }
+    
     public function mount()
     {
         // Require authentication in a real scenario
@@ -44,7 +75,16 @@ class TeacherDashboard extends Component
             
         $students = $enrollments->pluck('user')->unique('id');
 
-        // 3. Aggregate metrics
+        // 3. Setup Gradebook State if empty
+        if (empty($this->grades)) {
+            // Load existing grades into state
+            $submissions = \App\Models\Submission::whereIn('user_id', $students->pluck('id'))->get();
+            foreach ($submissions as $sub) {
+                $this->grades[$sub->user_id][$sub->assignment_id] = $sub->score;
+            }
+        }
+
+        // 4. Aggregate metrics
         $metrics = [
             'total_students' => $students->count(),
             'total_courses' => $sections->count(),

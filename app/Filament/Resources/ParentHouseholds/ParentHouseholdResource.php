@@ -18,10 +18,7 @@ class ParentHouseholdResource extends Resource
 {
     protected static ?string $model = Household::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHomeModern;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Management';
-    protected static ?string $navigationLabel = 'Parents / Contacts';
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $modelLabel = 'Parent Household';
 

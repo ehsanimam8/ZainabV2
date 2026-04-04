@@ -10,6 +10,10 @@ class Lesson extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'content' => 'array',
+    ];
+
     public function courseModule()
     {
         return $this->belongsTo(CourseModule::class);

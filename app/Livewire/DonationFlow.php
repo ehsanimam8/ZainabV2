@@ -25,6 +25,17 @@ class DonationFlow extends Component
 
     public $currentStep = 1;
 
+    public function mount()
+    {
+        if (request()->has('success') && request()->has('donation_id')) {
+            $donation = Donation::find(request()->donation_id);
+            if ($donation) {
+                $donation->update(['status' => 'completed']);
+            }
+            $this->currentStep = 3;
+        }
+    }
+
     public function processDonation()
     {
         $this->validate([
@@ -34,17 +45,36 @@ class DonationFlow extends Component
             'email' => 'required_unless:isAnonymous,true|email',
         ]);
 
-        // Integrate with Stripe Cashier / Create Donation Record
-        Donation::create([
+        // Create an initial 'pending' record
+        $donation = Donation::create([
             'amount' => $this->amount,
             'campaign_name' => $this->type . ($this->recurrence === 'monthly' ? ' (Monthly)' : ''),
             'first_name' => $this->isAnonymous ? 'Anonymous' : $this->firstName,
             'last_name' => $this->isAnonymous ? '' : $this->lastName,
             'email' => $this->isAnonymous ? 'anonymous@zainabcenter.com' : $this->email,
-            'status' => 'completed',
+            'status' => 'pending',
         ]);
 
-        $this->currentStep = 3; // Success step
+        \Stripe\Stripe::setApiKey(config('cashier.secret') ?? config('services.stripe.secret'));
+
+        $session = \Stripe\Checkout\Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                        'name' => 'Sadaqah / Donation: ' . $this->type,
+                    ],
+                    'unit_amount' => (int) ($this->amount * 100),
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => route('donate') . '?step=3&success=true&donation_id=' . $donation->id,
+            'cancel_url' => route('donate') . '?step=2',
+        ]);
+
+        return redirect($session->url);
     }
 
     public function render()

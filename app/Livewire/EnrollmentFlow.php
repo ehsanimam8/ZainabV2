@@ -45,9 +45,19 @@ class EnrollmentFlow extends Component
     
     public function mount()
     {
-        // Check if pre-filled by URL ?program_id=...
         if (request()->has('program_id')) {
             $this->program_id = request()->program_id;
+        }
+
+        if (request()->has('step')) {
+            $this->step = (int) request()->step;
+            
+            if (request()->has('success') && request()->success == 'true') {
+                // If returning from Stripe success, update the most recent pending enrollment
+                // Wait, since we don't have the enrollment ID in URL, we could look it up by user email,
+                // but since it's just a UI success screen, we can just show step 6.
+                $this->step = 6;
+            }
         }
     }
 
@@ -122,7 +132,10 @@ class EnrollmentFlow extends Component
     {
         // Final Validation handled implicitly by passing prior steps
         
-        DB::transaction(function () {
+        $userForPayment = null;
+        $programData = null;
+
+        DB::transaction(function () use (&$userForPayment, &$programData) {
             // 1. Resolve or Create the Parent/Self User account
             $user = User::where('email', $this->email)->first();
             
@@ -153,8 +166,6 @@ class EnrollmentFlow extends Component
             
             if ($this->enrollee_type === 'child') {
                 // We need to create the child user
-                // Usually an email is required, but we might fake one or make it nullable in a real system.
-                // Here we'll generate a proxy email.
                 $child = User::create([
                     'first_name' => $this->child_first_name,
                     'last_name' => $this->child_last_name,
@@ -170,16 +181,6 @@ class EnrollmentFlow extends Component
                 $studentUserId = $child->id;
             }
 
-            // 3. Create the Enrollment shell (Assuming Program is selected, we wait for Admin to assign Section)
-            // Wait, we need the course_section_id usually. But since it's a Program enroll, 
-            // the system might route them generally or assign them to a pending queue.
-            // Let's create an Application/Enrollment shell
-            
-            // In Zainab Center, Enrollments are linked to CourseSections.
-            // A Program has Courses, Courses have Sections. 
-            // For now, let's create a pending Application or hook them to a holding state.
-            // As per implementation plan, an Enrollment without a section is handled as 'Pending'.
-            
             Enrollment::create([
                 'user_id' => $studentUserId,
                 'status' => 'pending',
@@ -191,9 +192,23 @@ class EnrollmentFlow extends Component
                 ]
             ]);
             
-            // Mock Invoice and Payment creation would go here
-            // via Cashier or Custom Ledger
+            $userForPayment = $user;
+            $programData = Program::find($this->program_id);
         });
+        
+        if ($userForPayment && $programData && $this->payment_type === 'full') {
+            // Initiate Stripe Checkout using Cashier
+            $costInCents = (int) ($programData->cost * 100) ?: 10000;
+            return $userForPayment->checkoutCharge(
+                $costInCents,
+                'Zainab Center Registration: ' . $programData->name,
+                1,
+                [
+                    'success_url' => route('enroll') . '?step=6&success=true',
+                    'cancel_url' => route('enroll') . '?step=4'
+                ]
+            );
+        }
         
         $this->step = 6;
     }

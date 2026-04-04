@@ -18,9 +18,10 @@ class NotificationTemplateResource extends Resource
 {
     protected static ?string $model = NotificationTemplate::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBell;
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-bell';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Operations';
+    protected static string | \UnitEnum | null $navigationGroup = 'Operations';
+    protected static ?int $navigationSort = 5;
     protected static ?string $navigationLabel = 'Notifications';
 
     public static function form(Schema $schema): Schema
