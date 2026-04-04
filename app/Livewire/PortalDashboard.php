@@ -38,10 +38,11 @@ class PortalDashboard extends Component
     {
         $user = Auth::user() ?? User::role('student')->first() ?? User::first();
         
-        $this->isParent = $user->hasRole('parent'); // Assuming Spatie Roles or similar logic works here
+        $this->isParent = $user->hasRole('parent') || $user->hasRole('super_admin'); 
         
         if ($this->isParent) {
-            $this->children = collect($user->children)->map(function ($child) {
+            $childrenSource = $user->hasRole('super_admin') ? User::role('student')->limit(3)->get() : collect($user->children);
+            $this->children = collect($childrenSource)->map(function ($child) {
                 return [
                     'id' => $child->id, 
                     'name' => $child->first_name . ' ' . $child->last_name, 
@@ -50,7 +51,7 @@ class PortalDashboard extends Component
                 ];
             })->toArray();
 
-            $this->student = $user->children()->first() ?? clone $user; 
+            $this->student = collect($childrenSource)->first() ?? clone $user; 
         } else {
             $this->student = $user;
         }

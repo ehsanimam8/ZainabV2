@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\Enrollments\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
@@ -33,7 +34,7 @@ class EnrollmentsTable
                 //
             ])
             ->actions([
-                \Filament\Tables\Actions\Action::make('evaluate')
+                Action::make('evaluate')
                     ->label('Evaluate Status')
                     ->icon('heroicon-o-calculator')
                     ->color('warning')
@@ -45,7 +46,7 @@ class EnrollmentsTable
                             ->success()
                             ->send();
                     }),
-                \Filament\Tables\Actions\Action::make('download_certificate')
+                Action::make('download_certificate')
                     ->label('Certificate')
                     ->icon('heroicon-o-academic-cap')
                     ->color('success')

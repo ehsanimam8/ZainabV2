@@ -37,7 +37,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-white/5">
                             @foreach($students as $student)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition duration-75">
+                            <tr wire:key="student-{{ $student['user_id'] }}" class="hover:bg-gray-50 dark:hover:bg-white/5 transition duration-75">
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-gray-900 shadow-sm">
@@ -66,7 +66,9 @@
                                                 $label = 'E';
                                             }
                                         @endphp
-                                        <button wire:click="toggleAttendance('{{ $student['user_id'] }}', '{{ $date }}')"
+                                        <button type="button" 
+                                                wire:key="btn-{{ $student['user_id'] }}-{{ $date }}" 
+                                                wire:click="toggleAttendance('{{ $student['user_id'] }}', '{{ $date }}')"
                                                 class="w-7 h-7 mx-auto rounded flex items-center justify-center font-bold text-xs ring-1 ring-black/5 dark:ring-white/10 transition-colors {{ $bgClass }}">
                                             {{ $label }}
                                         </button>
