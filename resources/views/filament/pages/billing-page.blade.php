@@ -15,23 +15,23 @@
                     <div class="stats-grid">
                         <div class="stat-card" style="border-left: 4px solid var(--color-deep-teal);">
                             <span class="stat-label">Outstanding Balance</span>
-                            <div class="stat-value" style="color: var(--color-deep-teal);">$8,450</div>
-                            <div style="font-size:11px; color: var(--color-body-gray); margin-top:4px;">across 34 students</div>
+                            <div class="stat-value" style="color: var(--color-deep-teal);">${{ number_format($metrics['outstandingBalance'], 2) }}</div>
+                            <div style="font-size:11px; color: var(--color-body-gray); margin-top:4px;">across {{ $metrics['outstandingStudents'] }} students</div>
                         </div>
                         <div class="stat-card" style="border-left: 4px solid #16A34A;">
                             <span class="stat-label">Collected This Month</span>
-                            <div class="stat-value" style="color: #16A34A;">$12,300</div>
-                            <div style="font-size:11px; color: var(--color-body-gray); margin-top:4px;">↑ 8% vs last month</div>
+                            <div class="stat-value" style="color: #16A34A;">${{ number_format($metrics['collectedThisMonth'], 2) }}</div>
+                            <div style="font-size:11px; color: var(--color-body-gray); margin-top:4px;">Real-time successful sync</div>
                         </div>
                         <div class="stat-card" style="border-left: 4px solid #DC2626;">
                             <span class="stat-label">Failed Payments</span>
-                            <div class="stat-value" style="color: #DC2626;">7</div>
+                            <div class="stat-value" style="color: #DC2626;">{{ collect($metrics['failedPayments'])->max() }}</div>
                             <div style="font-size:11px; color: var(--color-body-gray); margin-top:4px;">require follow-up</div>
                         </div>
                         <div class="stat-card" style="border-left: 4px solid #D97706;">
                             <span class="stat-label">Auto-charges (7 days)</span>
-                            <div class="stat-value" style="color: #D97706;">$3,150</div>
-                            <div style="font-size:11px; color: var(--color-body-gray); margin-top:4px;">21 invoices due</div>
+                            <div class="stat-value" style="color: #D97706;">${{ number_format($metrics['autoCharges'], 2) }}</div>
+                            <div style="font-size:11px; color: var(--color-body-gray); margin-top:4px;">{{ $metrics['autoChargesCount'] }} invoices due</div>
                         </div>
                     </div>
 
@@ -84,56 +84,35 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @forelse($invoices as $invoice)
                                     <tr style="border-bottom:1px solid var(--color-light-gray);">
-                                        <td style="padding:10px; font-weight:600;">#INV-0091</td>
-                                        <td style="padding:10px;">Zainab Ahmed</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Islamic Theology</td>
-                                        <td style="padding:10px; font-weight:700;">$150.00</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Mar 25, 2026</td>
-                                        <td style="padding:10px;"><span class="badge badge-success">Active</span></td>
-                                        <td style="padding:10px; text-align:center;">0</td>
-                                        <td style="padding:10px;"><button class="btn btn-outline" style="font-size:11px; padding:4px 10px;" onclick="showToast('Opening invoice #INV-0091…')">View</button></td>
+                                        <td style="padding:10px; font-weight:600;">#INV-{{ str_pad(substr($invoice->id, 0, 4), 4, '0', STR_PAD_LEFT) }}</td>
+                                        <td style="padding:10px;">{{ $invoice->user->first_name ?? 'User' }} {{ $invoice->user->last_name ?? '' }}</td>
+                                        <td style="padding:10px; color: var(--color-body-gray);">{{ config('app.name') }} Tuition</td>
+                                        <td style="padding:10px; font-weight:700;">${{ number_format($invoice->amount, 2) }}</td>
+                                        <td style="padding:10px; color: {{ \Carbon\Carbon::parse($invoice->due_date)->isPast() && $invoice->status !== 'Completed' ? '#DC2626' : 'var(--color-body-gray)' }};">
+                                            {{ \Carbon\Carbon::parse($invoice->due_date)->format('M d, Y') }}
+                                            @if(\Carbon\Carbon::parse($invoice->due_date)->isPast() && $invoice->status !== 'Completed') ⚠ @endif
+                                        </td>
+                                        <td style="padding:10px;">
+                                            @if($invoice->status === 'Pending')
+                                                <span class="badge" style="background:#EFF6FF; color:#2563EB;">Pending</span>
+                                            @elseif($invoice->status === 'Overdue' || $invoice->status === 'Payment Failed')
+                                                <span class="badge badge-error">{{ $invoice->status }}</span>
+                                            @else
+                                                <span class="badge badge-success">{{ $invoice->status }}</span>
+                                            @endif
+                                        </td>
+                                        <td style="padding:10px; text-align:center;">{{ $invoice->enrollment->reactivation_count ?? 0 }}</td>
+                                        <td style="padding:10px;">
+                                            <a href="/admin/invoices/{{ $invoice->id }}/edit" class="btn btn-outline" style="font-size:11px; padding:4px 10px; display:inline-block; text-decoration:none;">View</a>
+                                        </td>
                                     </tr>
-                                    <tr style="border-bottom:1px solid var(--color-light-gray);">
-                                        <td style="padding:10px; font-weight:600;">#INV-0087</td>
-                                        <td style="padding:10px;">Omar Farooq</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Arabic Language</td>
-                                        <td style="padding:10px; font-weight:700;">$299.00</td>
-                                        <td style="padding:10px; color: #DC2626; font-weight:600;">Mar 01, 2026 ⚠</td>
-                                        <td style="padding:10px;"><span class="badge badge-error">Payment Failed</span></td>
-                                        <td style="padding:10px; text-align:center;">1</td>
-                                        <td style="padding:10px;"><button class="btn btn-primary" style="font-size:11px; padding:4px 10px;" onclick="showToast('Retry payment queued for Omar Farooq')">Retry</button></td>
-                                    </tr>
-                                    <tr style="border-bottom:1px solid var(--color-light-gray);">
-                                        <td style="padding:10px; font-weight:600;">#INV-0083</td>
-                                        <td style="padding:10px;">Aisha Siddiqui</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Quranic Studies</td>
-                                        <td style="padding:10px; font-weight:700;">$200.00</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Feb 15, 2026</td>
-                                        <td style="padding:10px;"><span class="badge badge-warning">Suspended</span></td>
-                                        <td style="padding:10px; text-align:center;">2</td>
-                                        <td style="padding:10px;"><button class="btn btn-outline" style="font-size:11px; padding:4px 10px; color: #16A34A; border-color:#16A34A;" onclick="showToast('Aisha Siddiqui reactivated — enrollment resumed')">Reactivate</button></td>
-                                    </tr>
-                                    <tr style="border-bottom:1px solid var(--color-light-gray);">
-                                        <td style="padding:10px; font-weight:600;">#INV-0079</td>
-                                        <td style="padding:10px;">Hassan Malik</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Islamic Theology</td>
-                                        <td style="padding:10px; font-weight:700;">$450.00</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Jan 10, 2026</td>
-                                        <td style="padding:10px;"><span class="badge" style="background:#FEF3C7; color:#B45309;">Abandoned</span></td>
-                                        <td style="padding:10px; text-align:center;">0</td>
-                                        <td style="padding:10px;"><button class="btn btn-outline" style="font-size:11px; padding:4px 10px;" onclick="showToast('Resume enrollment link sent to Hassan Malik')">Send Resume Link</button></td>
-                                    </tr>
+                                    @empty
                                     <tr>
-                                        <td style="padding:10px; font-weight:600;">#INV-0072</td>
-                                        <td style="padding:10px;">Sara Khan</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Arabic Language</td>
-                                        <td style="padding:10px; font-weight:700;">$299.00</td>
-                                        <td style="padding:10px; color: var(--color-body-gray);">Dec 01, 2025</td>
-                                        <td style="padding:10px;"><span class="badge" style="background:#ECFDF5; color:#059669;">Completed</span></td>
-                                        <td style="padding:10px; text-align:center;">0</td>
-                                        <td style="padding:10px;"><button class="btn btn-outline" style="font-size:11px; padding:4px 10px;" onclick="showToast('Receipt for #INV-0072 downloaded')">Receipt</button></td>
+                                        <td colspan="8" style="padding:20px; text-align:center; color: var(--color-body-gray);">No invoices found.</td>
                                     </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

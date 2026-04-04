@@ -3,13 +3,12 @@
                     <div class="flex justify-between items-center" style="margin-bottom: var(--space-6);">
                         <div>
                             <h1 class="ui-page-title">Calendar</h1>
-                            <p style="color: var(--color-body-gray);">March 2026 — Class schedule and institutional events.</p>
+                            <p style="color: var(--color-body-gray);">{{ $monthName }} — Class schedule and institutional events.</p>
                         </div>
                         <div class="flex gap-3">
-                            <button class="btn btn-outline">← Prev</button>
-                            <button class="btn btn-outline">Today</button>
-                            <button class="btn btn-outline">Next →</button>
-                            <button class="btn btn-primary">+ Add Event</button>
+                            <button wire:click="previousMonth" type="button" class="btn btn-outline">← Prev</button>
+                            <button wire:click="today" type="button" class="btn btn-outline">Today</button>
+                            <button wire:click="nextMonth" type="button" class="btn btn-outline">Next →</button>
                         </div>
                     </div>
 
@@ -28,69 +27,31 @@
                             </div>
                             <!-- Week rows -->
                             <div style="display: grid; grid-template-columns: repeat(7, 1fr);">
-                                <!-- Row 1 -->
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray); color: var(--color-mid-gray);">23</div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray); color: var(--color-mid-gray);">24</div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray); color: var(--color-mid-gray);">25</div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray); color: var(--color-mid-gray);">26</div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray); color: var(--color-mid-gray);">27</div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray); color: var(--color-mid-gray);">28</div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">1</div>
-                                </div>
-                                <!-- Row 2 -->
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">2</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">3</div>
-                                    <div style="font-size:11px; background: rgba(27,107,114,0.1); color: var(--color-deep-teal); border-radius:4px; padding:2px 6px; margin-top:4px;">Hanafi Fiqh 6pm</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">4</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">5</div>
-                                    <div style="font-size:11px; background: rgba(168,93,136,0.1); color: var(--color-mauve-rose); border-radius:4px; padding:2px 6px; margin-top:4px;">Arabic Gram. 5:30pm</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">6</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">7</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">8</div>
-                                    <div style="font-size:11px; background:#FEF3C7; color:#D97706; border-radius:4px; padding:2px 6px; margin-top:4px;">Staff Meeting 10am</div>
-                                </div>
-                                <!-- Row 3 -->
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">9</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">10</div>
-                                    <div style="font-size:11px; background: rgba(27,107,114,0.1); color: var(--color-deep-teal); border-radius:4px; padding:2px 6px; margin-top:4px;">Hanafi Fiqh 6pm</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">11</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">12</div>
-                                    <div style="font-size:11px; background: rgba(168,93,136,0.1); color: var(--color-mauve-rose); border-radius:4px; padding:2px 6px; margin-top:4px;">Arabic Gram. 5:30pm</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">13</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">14</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700; color: var(--color-deep-teal);">15 ●</div>
-                                    <div style="font-size:11px; background:#DBEAFE; color:#2563EB; border-radius:4px; padding:2px 6px; margin-top:4px;">Today</div>
-                                </div>
-                                <!-- Row 4 -->
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">16</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">17</div>
-                                    <div style="font-size:11px; background: rgba(27,107,114,0.1); color: var(--color-deep-teal); border-radius:4px; padding:2px 6px; margin-top:4px;">Hanafi Fiqh 6pm</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">18</div>
-                                    <div style="font-size:11px; background:#FEE2E2; color:#DC2626; border-radius:4px; padding:2px 6px; margin-top:4px;">Quiz Deadline</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);">
-                                    <div style="font-weight:700;">19</div>
-                                    <div style="font-size:11px; background: rgba(168,93,136,0.1); color: var(--color-mauve-rose); border-radius:4px; padding:2px 6px; margin-top:4px;">Arabic Gram. 5:30pm</div>
-                                </div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">20</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">21</div></div>
-                                <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray);"><div style="font-weight:700;">22</div></div>
+                                @foreach($calendarGrid as $day)
+                                    <div style="min-height:90px; padding:8px; border:1px solid var(--color-light-gray); {{ !$day['isCurrentMonth'] ? 'color: var(--color-mid-gray); background: #fafafa;' : '' }}">
+                                        @if($day['isToday'])
+                                            <div style="font-weight:700; color: var(--color-deep-teal);">{{ $day['day'] }} ●</div>
+                                            <div style="font-size:11px; background:#DBEAFE; color:#2563EB; border-radius:4px; padding:2px 4px; margin-top:2px; display:inline-block;">Today</div>
+                                        @else
+                                            <div style="font-weight:700;">{{ $day['day'] }}</div>
+                                        @endif
+
+                                        @foreach($day['events'] as $event)
+                                            @php
+                                                $bgColors = [
+                                                    'System' => ['bg' => '#FEE2E2', 'text' => '#DC2626'],
+                                                    'Academic' => ['bg' => 'rgba(27,107,114,0.1)', 'text' => 'var(--color-deep-teal)'],
+                                                    'Administrative' => ['bg' => '#FEF3C7', 'text' => '#D97706'],
+                                                ];
+                                                $style = $bgColors[$event['type']] ?? ['bg' => '#E5E7EB', 'text' => '#374151'];
+                                            @endphp
+                                            <div style="font-size:10px; font-weight:600; background: {{ $style['bg'] }}; color: {{ $style['text'] }}; border-radius:4px; padding:2px 6px; margin-top:4px; line-height:1.2;">
+                                                <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $event['title'] }}</div>
+                                                <div style="font-size:9px; opacity:0.8;">{{ $event['time'] }}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
 
@@ -99,46 +60,20 @@
                             <div class="card">
                                 <h3 style="font-size:14px; font-weight:700; margin-bottom:var(--space-4);">Upcoming Events</h3>
                                 <div style="display:grid; gap:var(--space-3);">
-                                    <div style="display:flex; gap:12px; align-items:flex-start;">
-                                        <div style="text-align:center; min-width:36px; background: var(--color-deep-teal); color:white; border-radius:6px; padding:4px 6px;">
-                                            <div style="font-size:14px; font-weight:700;">17</div>
-                                            <div style="font-size:9px; text-transform:uppercase;">Mar</div>
+                                    @forelse($upcomingEvents as $upEvent)
+                                        <div style="display:flex; gap:12px; align-items:flex-start;">
+                                            <div style="text-align:center; min-width:36px; background: var(--color-deep-teal); color:white; border-radius:6px; padding:4px 6px;">
+                                                <div style="font-size:14px; font-weight:700;">{{ \Carbon\Carbon::parse($upEvent->start_time)->format('d') }}</div>
+                                                <div style="font-size:9px; text-transform:uppercase;">{{ \Carbon\Carbon::parse($upEvent->start_time)->format('M') }}</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size:13px; font-weight:600; line-height:1.2;">{{ $upEvent->title }}</div>
+                                                <div style="font-size:11px; color: var(--color-body-gray);">{{ \Carbon\Carbon::parse($upEvent->start_time)->format('g:ia') }} · {{ $upEvent->location ?? 'Online' }}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div style="font-size:13px; font-weight:600;">Hanafi Fiqh — Section A</div>
-                                            <div style="font-size:11px; color: var(--color-body-gray);">6:00 PM · Online</div>
-                                        </div>
-                                    </div>
-                                    <div style="display:flex; gap:12px; align-items:flex-start;">
-                                        <div style="text-align:center; min-width:36px; background: #DC2626; color:white; border-radius:6px; padding:4px 6px;">
-                                            <div style="font-size:14px; font-weight:700;">18</div>
-                                            <div style="font-size:9px; text-transform:uppercase;">Mar</div>
-                                        </div>
-                                        <div>
-                                            <div style="font-size:13px; font-weight:600;">Quiz 1 Deadline</div>
-                                            <div style="font-size:11px; color: var(--color-body-gray);">All Fiqh Students</div>
-                                        </div>
-                                    </div>
-                                    <div style="display:flex; gap:12px; align-items:flex-start;">
-                                        <div style="text-align:center; min-width:36px; background: var(--color-mauve-rose); color:white; border-radius:6px; padding:4px 6px;">
-                                            <div style="font-size:14px; font-weight:700;">19</div>
-                                            <div style="font-size:9px; text-transform:uppercase;">Mar</div>
-                                        </div>
-                                        <div>
-                                            <div style="font-size:13px; font-weight:600;">Arabic Grammar 101</div>
-                                            <div style="font-size:11px; color: var(--color-body-gray);">5:30 PM · Online</div>
-                                        </div>
-                                    </div>
-                                    <div style="display:flex; gap:12px; align-items:flex-start;">
-                                        <div style="text-align:center; min-width:36px; background: #D97706; color:white; border-radius:6px; padding:4px 6px;">
-                                            <div style="font-size:14px; font-weight:700;">25</div>
-                                            <div style="font-size:9px; text-transform:uppercase;">Mar</div>
-                                        </div>
-                                        <div>
-                                            <div style="font-size:13px; font-weight:600;">Auto-charge Day</div>
-                                            <div style="font-size:11px; color: var(--color-body-gray);">21 invoices · $3,150</div>
-                                        </div>
-                                    </div>
+                                    @empty
+                                        <div style="font-size:12px; color: var(--color-body-gray); text-align:center;">No upcoming events.</div>
+                                    @endforelse
                                 </div>
                             </div>
                             <div class="card" style="margin-top: var(--space-4);">
