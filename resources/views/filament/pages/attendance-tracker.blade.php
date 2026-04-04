@@ -48,14 +48,28 @@
                                 </td>
                                 @foreach($dates as $date)
                                     <td class="px-4 py-4 text-center">
-                                        <select wire:model.defer="attendances.{{ $student['user_id'] }}.{{ $date }}" 
-                                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option value="">--</option>
-                                            <option value="Present">Present</option>
-                                            <option value="Absent">Absent</option>
-                                            <option value="Late">Late</option>
-                                            <option value="Excused">Excused</option>
-                                        </select>
+                                        @php
+                                            $state = $attendances[$student['user_id']][$date] ?? null;
+                                            $bgClass = 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500';
+                                            $label = '—';
+                                            if ($state === 'Present') {
+                                                $bgClass = 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
+                                                $label = 'P';
+                                            } elseif ($state === 'Absent') {
+                                                $bgClass = 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400';
+                                                $label = 'A';
+                                            } elseif ($state === 'Late') {
+                                                $bgClass = 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400';
+                                                $label = 'L';
+                                            } elseif ($state === 'Excused') {
+                                                $bgClass = 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
+                                                $label = 'E';
+                                            }
+                                        @endphp
+                                        <button wire:click="toggleAttendance('{{ $student['user_id'] }}', '{{ $date }}')"
+                                                class="w-7 h-7 mx-auto rounded flex items-center justify-center font-bold text-xs ring-1 ring-black/5 dark:ring-white/10 transition-colors {{ $bgClass }}">
+                                            {{ $label }}
+                                        </button>
                                     </td>
                                 @endforeach
                             </tr>

@@ -107,6 +107,40 @@ class AttendanceTracker extends Page
         }
     }
 
+    public function toggleAttendance($userId, $date)
+    {
+        $current = $this->attendances[$userId][$date] ?? null;
+        $states = ['Present', 'Absent', 'Late', 'Excused', null];
+        
+        $currentIndex = array_search($current, $states, true);
+        if ($currentIndex === false) {
+            $currentIndex = 4;
+        }
+        
+        $nextIndex = ($currentIndex + 1) % count($states);
+        $nextState = $states[$nextIndex];
+        $this->attendances[$userId][$date] = $nextState;
+
+        if ($nextState) {
+            Attendance::updateOrCreate(
+                [
+                    'user_id' => $userId,
+                    'course_id' => $this->selectedCourseId,
+                    'date' => $date,
+                ],
+                [
+                    'status' => $nextState,
+                ]
+            );
+        } else {
+            Attendance::where([
+                'user_id' => $userId,
+                'course_id' => $this->selectedCourseId,
+                'date' => $date,
+            ])->delete();
+        }
+    }
+
     protected function getViewData(): array
     {
         $course = Course::with(['program.enrollments.user'])->find($this->selectedCourseId);

@@ -8,7 +8,10 @@ class Lesson extends Model
 {
     use \Illuminate\Database\Eloquent\Concerns\HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'course_module_id', 'title', 'is_published', 'description', 'content_type', 'content_url',
+        'content_body', 'duration_minutes', 'order'
+    ];
 
     protected $casts = [
         'content' => 'array',

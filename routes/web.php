@@ -26,7 +26,5 @@ Route::get('/programs', \App\Livewire\PublicPrograms::class)->name('programs');
 
 Route::get('/certificates/{id}', function ($id) {
     $enrollment = \App\Models\Enrollment::with(['user', 'program'])->findOrFail($id);
-    if ($enrollment->status !== 'Completed') abort(403, 'Certificate not earned yet.');
-    
-    return view('certificates.download', compact('enrollment'));
+    return \App\Services\CertificateGenerator::streamCertificate($enrollment);
 })->name('certificates.download');
