@@ -1,71 +1,76 @@
 <x-filament-panels::page>
-    <div>
-        <section class="content-view">
-            <div class="flex justify-between items-center" style="margin-bottom: var(--space-6);">
+    <div class="space-y-6">
+        <section>
+            <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h1 class="ui-page-title">Attendance</h1>
-                    <p style="color: var(--color-body-gray);">Track daily attendance and generate reports.</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Attendance</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Track daily attendance and generate reports.</p>
                 </div>
                 <div class="flex gap-4 items-center">
-                    <select wire:model.live="selectedCourseId" style="padding: 10px 16px; border: 1px solid var(--color-mid-gray); border-radius: var(--radius-md); font-family: inherit;">
+                    <select wire:model.live="selectedCourseId" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 shadow-sm">
                         @foreach($courses as $c)
                             <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach
                     </select>
-                    <button wire:click="saveAttendances" class="btn btn-primary" style="background-color: #3B82F6; color: white;">
-                        <span style="display:flex;align-items:center;gap:6px;">
-                            <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            Save Attendance
-                        </span>
+                    <button wire:click="saveAttendances" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Save Attendance
                     </button>
-                    <button class="btn btn-outline" style="color: var(--color-mauve-rose); border-color: var(--color-mauve-rose);">Generate PDF Report</button>
+                    <button class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">Generate PDF</button>
                 </div>
             </div>
 
             @if(count($students) > 0)
-            <div class="card" style="padding: 0; overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: center;">
-                    <thead style="background: var(--color-deep-navy); color: white;">
-                        <tr>
-                            <th style="padding: 12px 24px; text-align: left;">Student</th>
-                            @foreach($dates as $date)
-                                <th style="padding: 12px;">{{ \Carbon\Carbon::parse($date)->format('D') }}<br><span style="font-weight: normal; opacity: 0.7;">{{ \Carbon\Carbon::parse($date)->format('M d') }}</span></th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($students as $student)
-                        <tr style="border-bottom: 1px solid var(--color-light-gray);">
-                            <td style="padding: 12px 24px; text-align: left; font-weight: 600;">
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <div style="width:28px;height:28px;border-radius:50%;background:var(--color-burnt-gold);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;">
-                                        {{ substr($student['name'], 0, 1) }}
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold">Student</th>
+                                @foreach($dates as $date)
+                                    <th class="px-4 py-4 text-center">
+                                        <div class="font-medium">{{ \Carbon\Carbon::parse($date)->format('D') }}</div>
+                                        <div class="text-xs font-normal text-gray-500 dark:text-gray-400 mt-0.5">{{ \Carbon\Carbon::parse($date)->format('M d') }}</div>
+                                    </th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-white/5">
+                            @foreach($students as $student)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition duration-75">
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-gray-900 shadow-sm">
+                                            {{ substr($student['name'], 0, 1) }}
+                                        </div>
+                                        {{ $student['name'] }}
                                     </div>
-                                    {{ $student['name'] }}
-                                </div>
-                            </td>
-                            @foreach($dates as $date)
-                                <td style="padding: 12px; vertical-align: middle;">
-                                    <select wire:model.defer="attendances.{{ $student['user_id'] }}.{{ $date }}" 
-                                            style="width: 90px; padding: 4px; border-radius: 4px; border: 1px solid var(--color-mid-gray); font-size: 12px; font-family: inherit;">
-                                        <option value="">--</option>
-                                        <option value="Present">Present</option>
-                                        <option value="Absent">Absent</option>
-                                        <option value="Late">Late</option>
-                                        <option value="Excused">Excused</option>
-                                    </select>
                                 </td>
+                                @foreach($dates as $date)
+                                    <td class="px-4 py-4 text-center">
+                                        <select wire:model.defer="attendances.{{ $student['user_id'] }}.{{ $date }}" 
+                                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option value="">--</option>
+                                            <option value="Present">Present</option>
+                                            <option value="Absent">Absent</option>
+                                            <option value="Late">Late</option>
+                                            <option value="Excused">Excused</option>
+                                        </select>
+                                    </td>
+                                @endforeach
+                            </tr>
                             @endforeach
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             @else
-            <div class="card" style="text-align: center; padding: 40px; color: var(--color-body-gray);">
-                <i data-lucide="calendar" style="width: 32px; height: 32px; margin: 0 auto 12px; opacity: 0.5;"></i>
-                <h3 style="font-weight: 600; color: var(--color-warm-black); margin-bottom: 8px;">No Students Found</h3>
-                <p>There are no students enrolled in this course yet.</p>
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 p-12 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 mb-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">No Students Found</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">There are no students enrolled in this course yet.</p>
             </div>
             @endif
         </section>
