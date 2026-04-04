@@ -83,7 +83,7 @@ class CalendarPage extends Page
             $calendarGrid[] = [
                 'day' => $iterator->format('j'),
                 'date' => $dateString,
-                'isCurrentMonth' => $iterator->month === clone($currentDate)->month,
+                'isCurrentMonth' => $iterator->month === $currentDate->month,
                 'isToday' => $iterator->isToday(),
                 'events' => $dayEvents,
             ];
