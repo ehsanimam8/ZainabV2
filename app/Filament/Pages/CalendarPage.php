@@ -57,7 +57,7 @@ class CalendarPage extends Page
         $endOfCalendar = $currentDate->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
 
         // Fetch actual events mapped to this calendar grid
-        $events = Event::whereBetween('start_time', [
+        $events = Event::whereBetween('start_date', [
             $startOfCalendar->format('Y-m-d H:i:s'), 
             $endOfCalendar->format('Y-m-d H:i:s')
         ])->get();
@@ -70,12 +70,12 @@ class CalendarPage extends Page
             
             // Map any active events falling onto this day
             $dayEvents = collect($events)->filter(function($event) use ($iterator) {
-                return Carbon::parse($event->start_time)->isSameDay($iterator);
+                return Carbon::parse($event->start_date)->isSameDay($iterator);
             })->map(function($ev) {
                 return [
                     'id' => $ev->id,
                     'title' => $ev->title,
-                    'time' => Carbon::parse($ev->start_time)->format('g:ia'),
+                    'time' => Carbon::parse($ev->start_date)->format('g:ia'),
                     'type' => $ev->type ?? 'System',
                 ];
             })->values()->toArray();
@@ -94,7 +94,7 @@ class CalendarPage extends Page
         return [
             'monthName' => $monthName,
             'calendarGrid' => $calendarGrid,
-            'upcomingEvents' => Event::where('start_time', '>=', now())->orderBy('start_time')->take(4)->get()
+            'upcomingEvents' => Event::where('start_date', '>=', now())->orderBy('start_date')->take(4)->get()
         ];
     }
 }
