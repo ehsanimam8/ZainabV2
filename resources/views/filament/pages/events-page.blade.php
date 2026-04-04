@@ -5,7 +5,7 @@
 				<h1 class="ui-page-title text-2xl font-bold">Events</h1>
 				<p style="color:var(--color-body-gray);">One-time gatherings — seminars, open days, fundraisers, workshops — with public registration.</p>
 			</div>
-			<button class="btn btn-primary bg-primary-600 text-white px-4 py-2 rounded-lg" onclick="openModal('modal-create-event')">+ Create Event</button>
+			<button class="btn btn-primary bg-primary-600 text-white px-4 py-2 rounded-lg" onclick="window.location.href='/admin/events/create'">+ Create Event</button>
 		</div>
 
 		<!-- Stats strip -->
@@ -59,7 +59,7 @@
 							@endif
 						</td>
 						<td style="padding:14px 24px;text-align:right;">
-							<a href="#" onclick="openModal('modal-create-event')" style="color:#0f766e;font-size:13px;margin-right:12px;">Edit</a>
+							<a href="/admin/events/{{ $event->id }}/edit" style="color:#0f766e;font-size:13px;margin-right:12px;">Edit</a>
 							@if($event->status === 'Registration Open')
 								<a href="#" style="color:#dc2626;font-size:13px;">Close Reg.</a>
 							@else
@@ -82,12 +82,12 @@
 		</div>
 		<div class="flex justify-between items-center" style="margin-bottom:var(--space-6);">
 			<div>
-				<h1 class="ui-page-title text-xl font-bold" id="event-detail-title">Event Name</h1>
+				<h1 class="ui-page-title text-2xl font-bold" id="event-detail-title">Event Name</h1>
 				<p style="color:#6b7280;" id="event-detail-meta">Date · Location · Type</p>
 			</div>
 			<div class="flex gap-3">
 				<button class="btn btn-outline border border-gray-300 px-4 py-2 rounded-lg bg-white">Export CSV</button>
-				<button class="btn btn-primary bg-primary-600 text-white px-4 py-2 rounded-lg" onclick="openModal('modal-create-event')">Edit Event</button>
+				<button class="btn btn-primary bg-primary-600 text-white px-4 py-2 rounded-lg" onclick="window.location.href='/admin/events'">Manage Event</button>
 			</div>
 		</div>
 		<!-- Event stats -->

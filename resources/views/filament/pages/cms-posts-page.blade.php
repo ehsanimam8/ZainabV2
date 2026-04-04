@@ -5,7 +5,7 @@
                             <h1 class="ui-page-title">Posts & Blog</h1>
                             <p style="color:var(--color-body-gray);">Announcements, articles, and blog posts for the public website.</p>
                         </div>
-                        <button class="btn btn-primary" onclick="openModal('modal-create-post')">+ New Post</button>
+                        <button class="btn btn-primary" onclick="window.location.href='/admin/cms-posts/create'">+ New Post</button>
                     </div>
                     <div class="card" style="padding:0;overflow:hidden;">
                         <table style="width:100%;border-collapse:collapse;text-align:left;">
@@ -42,7 +42,7 @@
                                         {{ $post->scheduled_at ? $post->scheduled_at->format('M j, Y') : '—' }}
                                     </td>
                                     <td style="padding:14px 24px;text-align:right;">
-                                        <a href="#" style="color:var(--color-deep-teal);font-size:13px;margin-right:12px;">Edit</a>
+                                        <a href="/admin/cms-posts/{{ $post->id }}/edit" style="color:var(--color-deep-teal);font-size:13px;margin-right:12px;">Edit</a>
                                         @if($post->status === 'Published')
                                             <a href="#" style="color:#dc2626;font-size:13px;">Unpublish</a>
                                         @else

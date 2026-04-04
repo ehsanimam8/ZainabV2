@@ -4,7 +4,7 @@
 			<h1 class="ui-page-title text-2xl font-bold">CRM — Inquiry Pipeline</h1>
 			<p style="color: var(--color-body-gray);">Track prospects from first inquiry through to active enrollment.</p>
 		</div>
-		<button class="btn btn-primary bg-primary-600 text-white px-4 py-2 rounded-lg" onclick="openModal('modal-add-household')">
+		<button class="btn btn-primary bg-primary-600 text-white px-4 py-2 rounded-lg" onclick="window.location.href='/admin/contacts/create'">
 			<x-heroicon-o-plus style="width:14px; vertical-align:middle; margin-right:6px; display:inline;" /> Log Inquiry
 		</button>
 	</div>

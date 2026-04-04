@@ -5,7 +5,7 @@
                             <h1 class="ui-page-title">Pages</h1>
                             <p style="color:var(--color-body-gray);">Create and manage public website pages. Publish to make them live.</p>
                         </div>
-                        <button class="btn btn-primary" onclick="openModal('modal-create-page')">+ New Page</button>
+                        <button class="btn btn-primary" onclick="window.location.href='/admin/cms-pages/create'">+ New Page</button>
                     </div>
 
                     <!-- Status tabs -->
@@ -48,7 +48,7 @@
                                         @endif
                                     </td>
                                     <td style="padding:14px 12px;font-size:13px;color:var(--color-body-gray);">{{ $page->published_at ? $page->published_at->format('M j, Y') : 'Draft' }}</td>
-                                    <td style="padding:14px 24px;text-align:right;"><a href="#" style="color:var(--color-deep-teal);font-size:13px;margin-right:12px;">Preview</a><a href="#" style="color:var(--color-deep-teal);font-size:13px;" onclick="openModal('modal-create-page')">Edit</a></td>
+                                    <td style="padding:14px 24px;text-align:right;"><a href="#" style="color:var(--color-deep-teal);font-size:13px;margin-right:12px;">Preview</a><a href="/admin/cms-pages/{{ $page->id }}/edit" style="color:var(--color-deep-teal);font-size:13px;">Edit</a></td>
                                 </tr>
                                 @endforeach
                             </tbody>
