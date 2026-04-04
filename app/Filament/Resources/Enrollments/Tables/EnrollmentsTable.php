@@ -5,7 +5,8 @@ namespace App\Filament\Resources\Enrollments\Tables;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\Action as TableAction; // Fallback namespace
+use Filament\Actions\Action;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
@@ -34,25 +35,6 @@ class EnrollmentsTable
                 //
             ])
             ->actions([
-                Action::make('evaluate')
-                    ->label('Evaluate Status')
-                    ->icon('heroicon-o-calculator')
-                    ->color('warning')
-                    ->visible(fn ($record) => $record->status !== 'Completed')
-                    ->action(function ($record) {
-                        dispatch(new \App\Jobs\EvaluateStudentCompletions($record->id));
-                        \Filament\Notifications\Notification::make()
-                            ->title('Evaluation Queued')
-                            ->success()
-                            ->send();
-                    }),
-                Action::make('download_certificate')
-                    ->label('Certificate')
-                    ->icon('heroicon-o-academic-cap')
-                    ->color('success')
-                    ->visible(fn ($record) => $record->status === 'Completed')
-                    ->url(fn ($record) => route('certificates.download', $record->id))
-                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->bulkActions([

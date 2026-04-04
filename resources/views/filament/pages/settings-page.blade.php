@@ -190,4 +190,37 @@
                         </div>
                     </div>
 
+                    <script>
+                        function switchSettingsTab(tabId, element) {
+                            // Hide all panels
+                            document.getElementById('settings-panel-general').style.display = 'none';
+                            document.getElementById('settings-panel-academic').style.display = 'none';
+                            document.getElementById('settings-panel-payments').style.display = 'none';
+                            document.getElementById('settings-panel-portal').style.display = 'none';
+                            document.getElementById('settings-panel-integrations').style.display = 'none';
+                            
+                            // Reset all buttons
+                            const btns = [
+                                'stab-general', 'stab-academic', 'stab-payments', 
+                                'stab-portal', 'stab-integrations'
+                            ];
+                            btns.forEach(id => {
+                                const btn = document.getElementById(id);
+                                if(btn) {
+                                    btn.style.color = 'var(--color-body-gray)';
+                                    btn.style.borderBottom = 'none';
+                                }
+                            });
+                            
+                            // Show active panel
+                            const panel = document.getElementById('settings-panel-' + tabId);
+                            if(panel) panel.style.display = 'block';
+                            
+                            // Highlight active button
+                            if(element) {
+                                element.style.color = 'var(--color-deep-teal)';
+                                element.style.borderBottom = '3px solid var(--color-deep-teal)';
+                            }
+                        }
+                    </script>
 </x-filament-panels::page>
