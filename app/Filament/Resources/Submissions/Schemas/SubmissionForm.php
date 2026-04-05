@@ -25,10 +25,10 @@ class SubmissionForm
                             ->required()
                             ->searchable()
                             ->label('Student'),
-                        Textarea::make('content')
-                            ->label('Student Answer / Content')
-                            ->disabled()
-                            ->columnSpanFull(),
+                        \Filament\Forms\Components\ViewField::make('content')
+                            ->view('filament.forms.components.quiz-submission-viewer')
+                            ->columnSpanFull()
+                            ->label('Parsed Quiz/Assignment Answers'),
                         DateTimePicker::make('submitted_at')
                             ->required()
                             ->label('Submitted At'),

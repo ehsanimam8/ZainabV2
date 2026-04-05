@@ -1,92 +1,94 @@
 <x-filament-panels::page>
     <div class="space-y-6">
-        <section>
-            <div class="flex justify-between items-center mb-6">
+        <section class="content-view">
+            <div class="flex justify-between items-center" style="margin-bottom: var(--space-6);">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Attendance</h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Track daily attendance and generate reports.</p>
+                    <h1 class="ui-page-title">Daily Attendance</h1>
+                    <p style="color: var(--color-body-gray);">Fast, single-click session marking.</p>
                 </div>
                 <div class="flex gap-4 items-center">
-                    <select wire:model.live="selectedCourseId" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 shadow-sm">
+                    <select wire:model.live="selectedCourseId" style="padding: 10px 16px; border: 1px solid var(--color-mid-gray); border-radius: var(--radius-md); font-family: 'Inter', sans-serif;">
                         @foreach($courses as $c)
                             <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach
                     </select>
-                    <button wire:click="saveAttendances" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Save Attendance
+                    <input type="date" wire:model.live="selectedDate" style="padding: 10px 16px; border: 1px solid var(--color-mid-gray); border-radius: var(--radius-md); font-family: 'Inter', sans-serif;" />
+                    
+                    <button wire:click="markAll('Present')" class="btn btn-primary" style="background-color: #10B981; border: none;">
+                        <span style="display:flex;align-items:center;gap:6px;">
+                            <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Mark All Present
+                        </span>
                     </button>
-                    <button class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">Generate PDF</button>
+                    <button wire:click="markAll('Absent')" class="btn btn-outline" style="color: #EF4444; border-color: #EF4444;">
+                        Mark All Absent
+                    </button>
                 </div>
             </div>
 
             @if(count($students) > 0)
-            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white">
-                            <tr>
-                                <th class="px-6 py-4 font-semibold">Student</th>
-                                @foreach($dates as $date)
-                                    <th class="px-4 py-4 text-center">
-                                        <div class="font-medium">{{ \Carbon\Carbon::parse($date)->format('D') }}</div>
-                                        <div class="text-xs font-normal text-gray-500 dark:text-gray-400 mt-0.5">{{ \Carbon\Carbon::parse($date)->format('M d') }}</div>
-                                    </th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-white/5">
-                            @foreach($students as $student)
-                            <tr wire:key="student-{{ $student['user_id'] }}" class="hover:bg-gray-50 dark:hover:bg-white/5 transition duration-75">
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-gray-900 shadow-sm">
-                                            {{ substr($student['name'], 0, 1) }}
-                                        </div>
-                                        {{ $student['name'] }}
-                                    </div>
-                                </td>
-                                @foreach($dates as $date)
-                                    <td class="px-4 py-4 text-center">
-                                        @php
-                                            $state = $attendances[$student['user_id']][$date] ?? null;
-                                            $bgClass = 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500';
-                                            $label = '—';
-                                            if ($state === 'Present') {
-                                                $bgClass = 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
-                                                $label = 'P';
-                                            } elseif ($state === 'Absent') {
-                                                $bgClass = 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400';
-                                                $label = 'A';
-                                            } elseif ($state === 'Late') {
-                                                $bgClass = 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400';
-                                                $label = 'L';
-                                            } elseif ($state === 'Excused') {
-                                                $bgClass = 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
-                                                $label = 'E';
-                                            }
-                                        @endphp
-                                        <button type="button" 
-                                                wire:key="btn-{{ $student['user_id'] }}-{{ $date }}" 
-                                                wire:click="toggleAttendance('{{ $student['user_id'] }}', '{{ $date }}')"
-                                                class="w-7 h-7 mx-auto rounded flex items-center justify-center font-bold text-xs ring-1 ring-black/5 dark:ring-white/10 transition-colors {{ $bgClass }}">
-                                            {{ $label }}
-                                        </button>
-                                    </td>
-                                @endforeach
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                @foreach($students as $student)
+                    @php
+                        $state = $attendances[$student['user_id']] ?? null;
+                        
+                        $isP = $state === 'Present';
+                        $isA = $state === 'Absent';
+                        $isE = $state === 'Excused';
+                        
+                        $cardBg = '#ffffff';
+                        $borderClass = 'border: 1px solid var(--color-light-gray);';
+                        
+                        if ($isP) {
+                            $cardBg = '#F0FDF4'; 
+                            $borderClass = 'border: 1px solid #10B981;';
+                        } elseif ($isA) {
+                            $cardBg = '#FEF2F2';
+                            $borderClass = 'border: 1px solid #EF4444;';
+                        } elseif ($isE) {
+                            $cardBg = '#EFF6FF';
+                            $borderClass = 'border: 1px solid #3B82F6;';
+                        }
+                    @endphp
+                    <div class="card" style="padding: 20px; transition: all 0.2s ease; background-color: {{ $cardBg }}; {{ $borderClass }}">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                            <div style="width:40px;height:40px;border-radius:50%;background:var(--color-burnt-gold);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;">
+                                {{ substr($student['name'], 0, 1) }}
+                            </div>
+                            <div>
+                                <div style="font-weight:700;color:var(--color-warm-black);font-size:15px;">{{ $student['name'] }}</div>
+                                <div style="font-size:12px;color:var(--color-body-gray);">ID: {{ substr($student['user_id'], 0, 8) }}...</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 8px;">
+                            <!-- Present Button -->
+                            <button wire:click="toggleAttendance('{{ $student['user_id'] }}', 'Present')" 
+                                    style="flex:1; padding:10px 0; border-radius:6px; font-weight:700; font-size:14px; cursor:pointer; transition:all 0.15s;
+                                           {{ $isP ? 'background:#10B981; color:white; border:1px solid #10B981;' : 'background:white; color:#6B7280; border:1px solid #E5E7EB;' }}">
+                                P
+                            </button>
+                            <!-- Absent Button -->
+                            <button wire:click="toggleAttendance('{{ $student['user_id'] }}', 'Absent')" 
+                                    style="flex:1; padding:10px 0; border-radius:6px; font-weight:700; font-size:14px; cursor:pointer; transition:all 0.15s;
+                                           {{ $isA ? 'background:#EF4444; color:white; border:1px solid #EF4444;' : 'background:white; color:#6B7280; border:1px solid #E5E7EB;' }}">
+                                A
+                            </button>
+                            <!-- Excused Button -->
+                            <button wire:click="toggleAttendance('{{ $student['user_id'] }}', 'Excused')" 
+                                    style="flex:1; padding:10px 0; border-radius:6px; font-weight:700; font-size:14px; cursor:pointer; transition:all 0.15s;
+                                           {{ $isE ? 'background:#3B82F6; color:white; border:1px solid #3B82F6;' : 'background:white; color:#6B7280; border:1px solid #E5E7EB;' }}">
+                                E
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
             </div>
             @else
-            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 p-12 flex flex-col items-center justify-center text-center">
-                <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                </div>
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white">No Students Found</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">There are no students enrolled in this course yet.</p>
+            <div class="card" style="text-align: center; padding: 40px; color: var(--color-body-gray);">
+                <i data-lucide="users" style="width: 32px; height: 32px; margin: 0 auto 12px; opacity: 0.5;"></i>
+                <h3 style="font-weight: 600; color: var(--color-warm-black); margin-bottom: 8px;">No Students Found</h3>
+                <p>There are no students enrolled in this course yet.</p>
             </div>
             @endif
         </section>

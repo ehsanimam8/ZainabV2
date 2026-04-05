@@ -20,22 +20,26 @@ class AttendanceTracker extends Page
     protected static ?string $title = 'Attendance Tracker';
 
     public $selectedCourseId;
-    public $attendances = []; // $attendances[$userId][$dateString] = status
-    public $datesToDisplay = [];
+    public $selectedDate;
+    public $attendances = []; // $attendances[$userId] = status
 
     public function mount()
     {
+        $this->selectedDate = now()->format('Y-m-d');
         $firstCourse = $this->getCourses()->first();
         if ($firstCourse) {
             $this->selectedCourseId = $firstCourse->id;
-            $this->loadDates();
             $this->loadAttendances();
         }
     }
 
     public function updatedSelectedCourseId()
     {
-        $this->loadDates();
+        $this->loadAttendances();
+    }
+    
+    public function updatedSelectedDate()
+    {
         $this->loadAttendances();
     }
 
@@ -44,18 +48,9 @@ class AttendanceTracker extends Page
         return Course::orderBy('name')->get();
     }
 
-    public function loadDates()
-    {
-        // Load the last 7 days for the visual grid
-        $this->datesToDisplay = collect();
-        for ($i = 6; $i >= 0; $i--) {
-            $this->datesToDisplay->push(now()->subDays($i)->format('Y-m-d'));
-        }
-    }
-
     public function loadAttendances()
     {
-        if (!$this->selectedCourseId) return;
+        if (!$this->selectedCourseId || !$this->selectedDate) return;
 
         $this->attendances = [];
 
@@ -63,81 +58,75 @@ class AttendanceTracker extends Page
         if (!$course || !$course->program) return;
 
         $records = Attendance::where('course_id', $this->selectedCourseId)
-            ->whereIn('date', $this->datesToDisplay)
-            ->get();
+            ->where('date', $this->selectedDate)
+            ->get()
+            ->keyBy('user_id');
 
         foreach ($course->program->enrollments as $enrollment) {
             $userId = $enrollment->user_id;
-            foreach ($this->datesToDisplay as $dateStr) {
-                $rec = $records->where('user_id', $userId)->where('date', $dateStr)->first();
-                $this->attendances[$userId][$dateStr] = $rec ? $rec->status : null;
-            }
+            $this->attendances[$userId] = isset($records[$userId]) ? $records[$userId]->status : null;
         }
     }
 
-    public function saveAttendances()
+    public function toggleAttendance($userId, $status)
     {
-        if (!$this->selectedCourseId) return;
+        if (!$this->selectedCourseId || !$this->selectedDate) return;
 
-        DB::beginTransaction();
-        try {
-            foreach ($this->attendances as $userId => $dates) {
-                foreach ($dates as $dateStr => $status) {
-                    if ($status) {
-                        Attendance::updateOrCreate(
-                            [
-                                'user_id' => $userId,
-                                'course_id' => $this->selectedCourseId,
-                                'date' => $dateStr,
-                            ],
-                            [
-                                'status' => $status,
-                            ]
-                        );
-                    }
-                }
-            }
-            DB::commit();
+        $currentStatus = $this->attendances[$userId] ?? null;
 
-            Notification::make()->title('Attendance Saved')->success()->send();
-            $this->loadAttendances();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Notification::make()->title('Error saving attendance')->danger()->send();
-        }
-    }
-
-    public function toggleAttendance($userId, $date)
-    {
-        $current = $this->attendances[$userId][$date] ?? null;
-        $states = ['Present', 'Absent', 'Late', 'Excused', null];
-        
-        $currentIndex = array_search($current, $states, true);
-        if ($currentIndex === false) {
-            $currentIndex = 4;
-        }
-        
-        $nextIndex = ($currentIndex + 1) % count($states);
-        $nextState = $states[$nextIndex];
-        $this->attendances[$userId][$date] = $nextState;
-
-        if ($nextState) {
+        // If clicking the same status, untoggle it (set to null)
+        if ($currentStatus === $status) {
+            $this->attendances[$userId] = null;
+            Attendance::where([
+                'user_id' => $userId,
+                'course_id' => $this->selectedCourseId,
+                'date' => $this->selectedDate,
+            ])->delete();
+        } else {
+            // Set the new status directly
+            $this->attendances[$userId] = $status;
             Attendance::updateOrCreate(
                 [
                     'user_id' => $userId,
                     'course_id' => $this->selectedCourseId,
-                    'date' => $date,
+                    'date' => $this->selectedDate,
                 ],
                 [
-                    'status' => $nextState,
+                    'status' => $status,
                 ]
             );
-        } else {
-            Attendance::where([
-                'user_id' => $userId,
-                'course_id' => $this->selectedCourseId,
-                'date' => $date,
-            ])->delete();
+        }
+    }
+
+    public function markAll($status)
+    {
+        if (!$this->selectedCourseId || !$this->selectedDate) return;
+
+        $course = Course::with(['program.enrollments.user'])->find($this->selectedCourseId);
+        if (!$course || !$course->program) return;
+
+        DB::beginTransaction();
+        try {
+            foreach ($course->program->enrollments as $enrollment) {
+                $userId = $enrollment->user_id;
+                $this->attendances[$userId] = $status;
+                
+                Attendance::updateOrCreate(
+                    [
+                        'user_id' => $userId,
+                        'course_id' => $this->selectedCourseId,
+                        'date' => $this->selectedDate,
+                    ],
+                    [
+                        'status' => $status,
+                    ]
+                );
+            }
+            DB::commit();
+            Notification::make()->title("All students marked as {$status}")->success()->send();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Notification::make()->title('Error updating records')->danger()->send();
         }
     }
 
@@ -159,7 +148,6 @@ class AttendanceTracker extends Page
         return [
             'courses' => $this->getCourses(),
             'students' => $students,
-            'dates' => $this->datesToDisplay,
         ];
     }
 }

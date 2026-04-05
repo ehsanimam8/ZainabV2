@@ -60,8 +60,8 @@ class Gradebook extends Page
 
             foreach ($course->assignments as $assignment) {
                 $sub = $submissions->where('user_id', $userId)->where('assignment_id', $assignment->id)->first();
-                $this->grades[$userId][$assignment->id] = $sub ? $sub->earned_points : null;
-                $this->comments[$userId][$assignment->id] = $sub ? $sub->feedback_comment : null;
+                $this->grades[$userId][$assignment->id] = $sub ? $sub->score : null;
+                $this->comments[$userId][$assignment->id] = $sub ? $sub->feedback : null;
             }
         }
     }
@@ -82,11 +82,9 @@ class Gradebook extends Page
                                 'assignment_id' => $assignmentId,
                             ],
                             [
-                                'earned_points' => $score,
-                                'status' => 'Graded',
-                                'graded_at' => now(),
-                                'graded_by' => auth()->id(),
-                                'feedback_comment' => $this->comments[$userId][$assignmentId] ?? null,
+                                'score' => $score,
+                                'grade_status' => 'Graded',
+                                'feedback' => $this->comments[$userId][$assignmentId] ?? null,
                             ]
                         );
                     }

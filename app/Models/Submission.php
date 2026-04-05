@@ -13,8 +13,6 @@ class Submission extends Model
     protected $casts = [
         'answers_data' => 'array',
         'submitted_at' => 'datetime',
-        'graded_at' => 'datetime',
-        'earned_points' => 'decimal:2',
     ];
 
     public function assignment()
