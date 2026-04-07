@@ -252,7 +252,7 @@
                     $isPast = $event->start_date && $event->start_date->isPast();
                     // Color styling hash based on ID for visual variety like the static mockup
                     $colors = ['#1A2F4A', '#1B6B72', '#A85D88', '#065f46'];
-                    $bgColor = $colors[$event->id % count($colors)];
+                    $bgColor = $colors[abs(crc32($event->id)) % count($colors)];
                     
                     $isFree = $event->pricing_type === 'free';
                     $isOnline = str_contains(strtolower($event->location), 'online') || str_contains(strtolower($event->location), 'zoom');

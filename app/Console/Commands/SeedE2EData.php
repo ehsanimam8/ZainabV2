@@ -142,6 +142,73 @@ class SeedE2EData extends Command
             'fee_amount' => 0.00
         ]);
 
+        // Generate Financial Data for the E2E Student strictly mapped for UX testing
+        $enrollmentTarget = Enrollment::where('user_id', $student->id)->first();
+        if ($enrollmentTarget) {
+            \App\Models\Invoice::firstOrCreate([
+                'user_id' => $student->id,
+                'status' => 'paid',
+            ], [
+                'id' => Str::uuid(),
+                'enrollment_id' => $enrollmentTarget->id,
+                'amount' => 450.00,
+                'due_date' => now()->subDays(10),
+                'notes' => 'Registration Deposit (Paid)',
+                'pdf_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ]);
+            
+            \App\Models\Invoice::firstOrCreate([
+                'user_id' => $student->id,
+                'status' => 'unpaid',
+            ], [
+                'id' => Str::uuid(),
+                'enrollment_id' => $enrollmentTarget->id,
+                'amount' => 150.00,
+                'due_date' => now()->addDays(15),
+                'notes' => 'Spring Semester Tuple - Installment 2',
+            ]);
+            
+            \App\Models\Payment::firstOrCreate([
+                'user_id' => $student->id,
+                'amount' => 500.00, // Matching the donation requirement parameters
+            ], [
+                'id' => Str::uuid(),
+                'currency' => 'USD',
+                'status' => 'completed',
+                'payment_method' => 'stripe',
+                'notes' => 'Annual Sadaqah contribution dynamically mocked'
+            ]);
+            
+            // Generate Mock Notifications specifically linking Livewire UI arrays 
+            $student->notifications()->create([
+                'id' => Str::uuid(),
+                'type' => 'App\Notifications\QuizGraded',
+                'data' => [
+                    'title' => 'Quiz Graded: Pillars of Salah',
+                    'message' => 'Your score: <strong>90%</strong>. Feedback from Ustadha K. Nour is available.',
+                    'icon' => 'award',
+                    'bg' => 'var(--color-blush)',
+                    'border' => 'var(--color-primary-portal)',
+                    'color' => 'white'
+                ],
+                'read_at' => null // Unread state
+            ]);
+            
+            $student->notifications()->create([
+                'id' => Str::uuid(),
+                'type' => 'App\Notifications\PaymentReminder',
+                'data' => [
+                    'title' => 'Payment Reminder',
+                    'message' => 'Your next installment of $150 is due on March 25, 2026.',
+                    'icon' => 'credit-card',
+                    'bg' => 'var(--color-light-gray)',
+                    'border' => 'var(--color-mid-gray)',
+                    'color' => 'var(--color-body-gray)'
+                ],
+                'read_at' => now() // Read state
+            ]);
+        }
+
         $this->info('E2E Data structures safely deployed across all logical arrays!');
     }
 }

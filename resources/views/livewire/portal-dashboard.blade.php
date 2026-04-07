@@ -40,7 +40,12 @@
                     <span class="nav-text">Transcript</span>
                 </a>
                 <a href="#portal-notifications" class="nav-item" data-view="portal-notifications">
-                    <span class="nav-icon"><i data-lucide="bell"></i></span>
+                    <span class="nav-icon" style="position:relative;">
+                        <i data-lucide="bell"></i>
+                        @if($unreadNotificationsCount > 0)
+                            <span style="position:absolute; top:-2px; right:-2px; background:#ef4444; color:white; font-size:10px; font-weight:bold; width:14px; height:14px; display:flex; align-items:center; justify-content:center; border-radius:50%;">{{ $unreadNotificationsCount }}</span>
+                        @endif
+                    </span>
                     <span class="nav-text">Notifications</span>
                 </a>
                 <a href="#billing" class="nav-item" data-view="billing">
@@ -156,10 +161,10 @@
                     <div>
                         <div class="card" style="background: var(--color-primary-portal); color: white;">
                             <h3 style="font-family: 'Inter'; font-size: 16px; margin-bottom: 4px;">My Balance</h3>
-                            <div style="font-size: 28px; font-weight: 700;">${{ number_format($userBalance, 2) }}</div>
-                            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 16px;">Next installment due Mar 25
+                            <div style="font-size: 28px; font-weight: 700;">${{ number_format($upcomingDue, 2) }}</div>
+                            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 16px;">Next installment due {{ $nextInvoice ? \Carbon\Carbon::parse($nextInvoice->due_date)->format('M d') : 'N/A' }}
                             </p>
-                            <button class="btn"
+                            <button type="button" onclick="openPortalPayModal()" class="btn"
                                 style="background: white; color: var(--color-primary-portal); width: 100%;">Pay
                                 Now</button>
                         </div>
@@ -296,7 +301,7 @@
                 <div class="card" style="max-width: 600px; margin: 0 auto; position: relative;">
                     <!-- Lock Overlay -->
                     <div x-show="!active && !$wire.quizSubmitted" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.8); z-index:10; display:flex; align-items:center; justify-content:center; border-radius:12px; backdrop-filter:blur(2px);">
-                        <button class="btn btn-primary" wire:click="startQuiz" style="box-shadow: 0 4px 12px rgba(168,93,136,0.3);">Start Quiz</button>
+                        <button type="button" class="btn btn-primary" wire:click.prevent="startQuiz" style="box-shadow: 0 4px 12px rgba(168,93,136,0.3);">Start Quiz</button>
                     </div>
 
                     <p style="font-weight: 600; margin-bottom: var(--space-6);" :style="$wire.quizSubmitted ? 'opacity:0.6' : ''">Question 1: Which of the following is considered an internal pillar (Arkan) of Salah?</p>
@@ -317,8 +322,8 @@
                     </div>
 
                     <div style="margin-top: var(--space-8); display: flex; justify-content: space-between;" x-show="active">
-                        <button class="btn btn-outline" onclick="portalToast('Saved progress')">Save for later</button>
-                        <button class="btn btn-primary" wire:click="submitQuiz" style="background:var(--color-primary-portal);">Submit Answer</button>
+                        <button type="button" class="btn btn-outline" onclick="portalToast('Saved progress')">Save for later</button>
+                        <button type="button" class="btn btn-primary" wire:click.prevent="submitQuiz" style="background:var(--color-primary-portal);">Submit Answer</button>
                     </div>
                 </div>
             </section>
@@ -572,26 +577,34 @@
                     </div>
                     <div style="flex:1;">
                         <div style="font-weight:700;font-size:15px;color:var(--color-deep-navy);">Enrollment Status: <span style="color:#16a34a;">Active</span></div>
-                        <div style="font-size:13px;color:var(--color-body-gray);margin-top:2px;">Full-time Islamic Theology · Next payment of <strong>$150.00</strong> due <strong>March 25, 2026</strong></div>
+                        <div style="font-size:13px;color:var(--color-body-gray);margin-top:2px;">
+                            @if($nextInvoice)
+                                Next payment of <strong>${{ number_format($nextInvoice->amount, 2) }}</strong> due <strong>{{ \Carbon\Carbon::parse($nextInvoice->due_date)->format('F j, Y') }}</strong>
+                            @else
+                                No active payment schedules mapping overdue logic.
+                            @endif
+                        </div>
                     </div>
-                    <button class="btn btn-primary" style="font-size:13px;background:var(--color-primary-portal);" onclick="openPortalPayModal()"><i data-lucide="credit-card" style="width:14px;vertical-align:middle;margin-right:6px;"></i>Pay Now</button>
+                    @if($nextInvoice)
+                        <button type="button" class="btn btn-primary" style="font-size:13px;background:var(--color-primary-portal);" onclick="openPortalPayModal()"><i data-lucide="credit-card" style="width:14px;vertical-align:middle;margin-right:6px;"></i>Pay Now</button>
+                    @endif
                 </div>
 
                 <!-- Summary stats -->
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin-bottom:var(--space-6);">
                     <div class="card" style="border-left:4px solid #16a34a;padding:14px 16px;">
                         <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-body-gray);margin-bottom:4px;">Paid This Year</div>
-                        <div style="font-size:28px;font-weight:700;color:#16a34a;">$449.00</div>
-                        <div style="font-size:11px;color:var(--color-body-gray);margin-top:2px;">2 invoices</div>
+                        <div style="font-size:28px;font-weight:700;color:#16a34a;">${{ number_format($totalPaid, 2) }}</div>
+                        <div style="font-size:11px;color:var(--color-body-gray);margin-top:2px;">{{ collect($invoices)->where('status', 'paid')->count() }} invoices</div>
                     </div>
                     <div class="card" style="border-left:4px solid #d97706;padding:14px 16px;">
                         <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-body-gray);margin-bottom:4px;">Upcoming</div>
-                        <div style="font-size:28px;font-weight:700;color:#d97706;">$150.00</div>
-                        <div style="font-size:11px;color:var(--color-body-gray);margin-top:2px;">Due Mar 25</div>
+                        <div style="font-size:28px;font-weight:700;color:#d97706;">${{ number_format($upcomingDue, 2) }}</div>
+                        <div style="font-size:11px;color:var(--color-body-gray);margin-top:2px;">Due {{ $nextInvoice ? \Carbon\Carbon::parse($nextInvoice->due_date)->format('M d') : 'N/A' }}</div>
                     </div>
                     <div class="card" style="border-left:4px solid var(--color-primary-portal);padding:14px 16px;">
-                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-body-gray);margin-bottom:4px;">Donations (2026)</div>
-                        <div style="font-size:28px;font-weight:700;color:var(--color-primary-portal);">$500.00</div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-body-gray);margin-bottom:4px;">Donations ({{ now()->format('Y') }})</div>
+                        <div style="font-size:28px;font-weight:700;color:var(--color-primary-portal);">${{ number_format($totalDonations, 2) }}</div>
                         <div style="font-size:11px;color:var(--color-body-gray);margin-top:2px;">Jazakumullah Khairan</div>
                     </div>
                 </div>
@@ -603,8 +616,6 @@
                             <h3 class="brand-font" style="font-size:18px;">Invoice History</h3>
                             <select style="padding:6px 10px;border:1px solid var(--color-mid-gray);border-radius:6px;font-size:12px;">
                                 <option>All Students</option>
-                                <option>Zainab Ahmed</option>
-                                <option>Sara Ahmed</option>
                             </select>
                         </div>
                         <table class="data-table">
@@ -620,42 +631,37 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td style="font-weight:600;font-size:12px;color:var(--color-body-gray);">#INV-0091</td>
-                                    <td>Fall Term Tuition — Installment 1</td>
-                                    <td>Zainab Ahmed</td>
-                                    <td style="font-weight:700;">$150.00</td>
-                                    <td style="font-size:12px;color:var(--color-body-gray);">Mar 01</td>
-                                    <td><span class="status-pill" style="background:#dcfce7;color:#166534;">Paid</span></td>
-                                    <td><button class="btn btn-outline" style="font-size:11px;padding:3px 9px;" onclick="portalToast('Receipt for #INV-0091 downloaded')">Receipt</button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight:600;font-size:12px;color:var(--color-body-gray);">#INV-0083</td>
-                                    <td>Arabic Foundations — Registration Fee</td>
-                                    <td>Sara Ahmed</td>
-                                    <td style="font-weight:700;">$299.00</td>
-                                    <td style="font-size:12px;color:var(--color-body-gray);">Mar 01</td>
-                                    <td><span class="status-pill" style="background:#dcfce7;color:#166534;">Paid</span></td>
-                                    <td><button class="btn btn-outline" style="font-size:11px;padding:3px 9px;" onclick="portalToast('Receipt for #INV-0083 downloaded')">Receipt</button></td>
-                                </tr>
-                                <tr style="background:#fffbeb;">
-                                    <td style="font-weight:600;font-size:12px;color:var(--color-body-gray);">#INV-0097</td>
-                                    <td>Fall Term Tuition — Installment 2</td>
-                                    <td>Zainab Ahmed</td>
-                                    <td style="font-weight:700;">$150.00</td>
-                                    <td style="font-size:12px;color:#d97706;font-weight:600;">Mar 25 ⟲</td>
-                                    <td><span class="status-pill status-pending">Upcoming</span></td>
-                                    <td><button class="btn btn-primary" style="font-size:11px;padding:3px 9px;background:var(--color-primary-portal);" onclick="openPortalPayModal()">Pay Early</button></td>
-                                </tr>
-                                <tr style="opacity:0.6;">
-                                    <td style="font-weight:600;font-size:12px;color:var(--color-body-gray);">#INV-0102</td>
-                                    <td>Fall Term Tuition — Installment 3</td>
-                                    <td>Zainab Ahmed</td>
-                                    <td style="font-weight:700;">$150.00</td>
-                                    <td style="font-size:12px;color:var(--color-body-gray);">Apr 25</td>
-                                    <td><span class="status-pill" style="background:#f3f4f6;color:#6b7280;">Scheduled</span></td>
-                                    <td></td>
-                                </tr>
+                                @forelse($invoices as $invoice)
+                                    @php
+                                        $isPaid = $invoice->status === 'paid';
+                                        $isUnpaid = $invoice->status === 'unpaid';
+                                    @endphp
+                                    <tr {!! $isUnpaid ? 'style="background:#fffbeb;"' : '' !!}>
+                                        <td style="font-weight:600;font-size:12px;color:var(--color-body-gray);">#INV-{{ strtoupper(substr($invoice->id, 0, 4)) }}</td>
+                                        <td>{{ $invoice->notes ?? 'Tuition Installment' }}</td>
+                                        <td>{{ $student->first_name }} {{ $student->last_name }}</td>
+                                        <td style="font-weight:700;">${{ number_format($invoice->amount, 2) }}</td>
+                                        <td style="font-size:12px;color:{{ $isUnpaid ? '#d97706' : 'var(--color-body-gray)' }};">{{ \Carbon\Carbon::parse($invoice->due_date)->format('M d') }}</td>
+                                        <td>
+                                            @if($isPaid)
+                                                <span class="status-pill" style="background:#dcfce7;color:#166534;">Paid</span>
+                                            @else
+                                                <span class="status-pill status-pending">Upcoming</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($isPaid && $invoice->pdf_url)
+                                                <button type="button" class="btn btn-outline" style="font-size:11px;padding:3px 9px;" onclick="window.open('{{ $invoice->pdf_url }}')">Receipt</button>
+                                            @elseif($isUnpaid)
+                                                <button type="button" class="btn btn-primary" style="font-size:11px;padding:3px 9px;background:var(--color-primary-portal);" onclick="openPortalPayModal()">Pay Early</button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; color: var(--color-body-gray); padding: 20px;">No invoices found.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -856,14 +862,19 @@
                     <p style="color: var(--color-body-gray);">Academic record for completed programs. Transcript is scoped per program.</p>
                 </div>
 
-                <!-- Completed Program -->
-                <div class="card" style="border-top: 4px solid var(--color-primary-portal);">
+                @forelse($transcriptEnrollments as $enrollment)
+                <div class="card" style="border-top: 4px solid var(--color-primary-portal); margin-bottom: 24px;">
                     <div class="flex justify-between items-center" style="margin-bottom: var(--space-4);">
                         <div>
-                            <h3 class="brand-font" style="font-size:20px;">Arabic Language — Foundations</h3>
-                            <p style="font-size:13px; color: var(--color-body-gray); margin-top:4px;">Term: Fall 2025 · Instructor: Ustadh Tariq · Status: <span style="color:#059669; font-weight:700;">Completed</span></p>
+                            <h3 class="brand-font" style="font-size:20px;">{{ $enrollment->program->name }}</h3>
+                            <p style="font-size:13px; color: var(--color-body-gray); margin-top:4px;">
+                                Term: {{ $enrollment->program->term->name ?? 'Current' }} · Status: 
+                                <span style="color:{{ $enrollment->status === 'Completed' ? '#059669' : '#C28E18' }}; font-weight:700;">
+                                    {{ $enrollment->status }}
+                                </span>
+                            </p>
                         </div>
-                        <button class="btn btn-primary" style="background: var(--color-primary-portal);">
+                        <button type="button" class="btn btn-primary" style="background: var(--color-primary-portal);">
                             <i data-lucide="download" style="width:14px; vertical-align:middle; margin-right:6px;"></i>Download PDF
                         </button>
                     </div>
@@ -878,45 +889,52 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style="border-bottom:1px solid var(--color-light-gray);">
-                                <td style="padding:10px 16px;">Module 1 Quiz — Introduction to Arabic</td>
-                                <td style="padding:10px; text-align:center;"><span class="badge badge-info">Quiz</span></td>
-                                <td style="padding:10px; text-align:center; font-weight:700;">9</td>
-                                <td style="padding:10px; text-align:center; color: var(--color-body-gray);">10</td>
-                                <td style="padding:10px; text-align:center;"><span class="badge badge-success">A</span></td>
-                            </tr>
-                            <tr style="border-bottom:1px solid var(--color-light-gray);">
-                                <td style="padding:10px 16px;">Assignment 1 — Nahw Exercises</td>
-                                <td style="padding:10px; text-align:center;"><span class="badge badge-warning">HW</span></td>
-                                <td style="padding:10px; text-align:center; font-weight:700;">18</td>
-                                <td style="padding:10px; text-align:center; color: var(--color-body-gray);">20</td>
-                                <td style="padding:10px; text-align:center;"><span class="badge badge-success">A-</span></td>
-                            </tr>
-                            <tr style="border-bottom:1px solid var(--color-light-gray);">
-                                <td style="padding:10px 16px;">Module 2 Quiz — Morphology</td>
-                                <td style="padding:10px; text-align:center;"><span class="badge badge-info">Quiz</span></td>
-                                <td style="padding:10px; text-align:center; font-weight:700;">8</td>
-                                <td style="padding:10px; text-align:center; color: var(--color-body-gray);">10</td>
-                                <td style="padding:10px; text-align:center;"><span class="badge badge-success">B+</span></td>
-                            </tr>
+                            @php
+                                $totalEarned = 0;
+                                $totalMax = 0;
+                            @endphp
+                            @foreach($enrollment->program->courses as $course)
+                                @foreach($course->assignments as $assignment)
+                                    @php
+                                        $submission = $assignment->submissions->first();
+                                        $max = $assignment->total_points ?? 10;
+                                        $earned = $submission ? ($submission->score ?? 0) : 0;
+                                        $totalEarned += $earned;
+                                        $totalMax += $max;
+                                        
+                                        $badges = ['Quiz' => 'badge-info', 'Assignment' => 'badge-warning', 'Exam' => 'badge-success'];
+                                        $typeBadge = $badges[$assignment->type] ?? 'badge-info';
+                                        
+                                        $percent = $max > 0 ? ($earned / $max) * 100 : 0;
+                                        $letter = $percent >= 90 ? 'A' : ($percent >= 80 ? 'B' : ($percent >= 70 ? 'C' : 'F'));
+                                    @endphp
+                                    <tr style="border-bottom:1px solid var(--color-light-gray);">
+                                        <td style="padding:10px 16px;">{{ $course->name }} — {{ $assignment->title }}</td>
+                                        <td style="padding:10px; text-align:center;"><span class="badge {{ $typeBadge }}">{{ $assignment->type }}</span></td>
+                                        <td style="padding:10px; text-align:center; font-weight:700;">{{ number_format($earned, 1) }}</td>
+                                        <td style="padding:10px; text-align:center; color: var(--color-body-gray);">{{ number_format($max, 1) }}</td>
+                                        <td style="padding:10px; text-align:center;"><span class="badge badge-success">{{ $submission ? $letter : 'N/A' }}</span></td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
                             <tr style="background: var(--color-blush);">
                                 <td style="padding:10px 16px; font-weight:700;">Final Grade</td>
                                 <td colspan="2" style="padding:10px;"></td>
-                                <td style="padding:10px;"></td>
-                                <td style="padding:10px; text-align:center; font-size:16px; font-weight:900; color: var(--color-primary-portal);">A–</td>
+                                <td style="padding:10px; text-align:center; font-weight:700;">{{ $totalMax > 0 ? number_format(($totalEarned / $totalMax) * 100, 1) . '%' : 'N/A' }}</td>
+                                @php
+                                    $finalPercent = $totalMax > 0 ? ($totalEarned / $totalMax) * 100 : 0;
+                                    $finalLetter = $finalPercent >= 90 ? 'A' : ($finalPercent >= 80 ? 'B' : ($finalPercent >= 70 ? 'C' : ($totalMax > 0 ? 'F' : 'N/A')));
+                                @endphp
+                                <td style="padding:10px; text-align:center;"><span class="badge badge-success">{{ $finalLetter }}</span></td>
                             </tr>
                         </tbody>
                     </table>
-                    <p style="font-size:12px; color: var(--color-body-gray); padding: 0 4px;">Certificate of Completion issued on December 15, 2025.</p>
                 </div>
-
-                <!-- In-progress note -->
-                <div class="card" style="background: var(--color-warm-ivory); border: 1px dashed var(--color-mid-gray);">
-                    <p style="font-size:13px; color: var(--color-body-gray); text-align:center;">
-                        <i data-lucide="clock" style="width:14px; vertical-align:middle; margin-right:4px;"></i>
-                        Transcripts for <strong>Hanafi Fiqh</strong> will be available upon program completion.
-                    </p>
-                </div>
+                @empty
+                    <div class="card" style="text-align: center; color: var(--color-body-gray); padding: 48px;">
+                        No transcript records found. Active and Completed program assessments will appear here.
+                    </div>
+                @endforelse
             </section>
 
             <!-- View: Notifications -->
@@ -924,62 +942,41 @@
                 <div style="margin-bottom: var(--space-8);">
                     <div class="flex justify-between items-center">
                         <h1 class="brand-font" style="font-size: 32px; color: var(--color-deep-navy);">Notifications</h1>
-                        <button class="btn btn-outline" style="font-size:12px; border-color: var(--color-primary-portal); color: var(--color-primary-portal);">Mark all read</button>
+                        @if($unreadNotificationsCount > 0)
+                            <button wire:click="markAllNotificationsAsRead" class="btn btn-outline" style="font-size:12px; border-color: var(--color-primary-portal); color: var(--color-primary-portal);">Mark all read</button>
+                        @endif
                     </div>
                 </div>
                 <div style="display:grid; gap: var(--space-3);">
-                    <!-- Unread -->
-                    <div class="card flex gap-4" style="border-left: 4px solid var(--color-primary-portal); background: var(--color-blush);">
-                        <div style="min-width:40px; height:40px; border-radius:50%; background: var(--color-primary-portal); color:white; display:flex; align-items:center; justify-content:center;">
-                            <i data-lucide="award" style="width:18px;"></i>
-                        </div>
-                        <div style="flex:1;">
-                            <div class="flex justify-between">
-                                <h4 style="font-family:'Inter'; font-size:14px;">Quiz Graded: Pillars of Salah</h4>
-                                <span style="font-size:11px; color: var(--color-body-gray);">Just now</span>
+                    @forelse($notifications as $notify)
+                        @php
+                            $isUnread = is_null($notify->read_at);
+                            $iconColor = $notify->data['color'] ?? 'var(--color-primary-portal)';
+                            $iconBg = $notify->data['bg'] ?? 'var(--color-blush)';
+                            $borderColor = $notify->data['border'] ?? 'var(--color-primary-portal)';
+                            $icon = $notify->data['icon'] ?? 'bell';
+                        @endphp
+                        
+                        <div class="card flex gap-4" style="{{ $isUnread ? "border-left: 4px solid {$borderColor}; background: {$iconBg};" : '' }}">
+                            <div style="min-width:40px; height:40px; border-radius:50%; background: {{ $isUnread ? $borderColor : 'var(--color-light-gray)' }}; color: {{ $isUnread ? 'white' : 'var(--color-body-gray)' }}; display:flex; align-items:center; justify-content:center;">
+                                <i data-lucide="{{ $icon }}" style="width:18px;"></i>
                             </div>
-                            <p style="font-size:13px; color: var(--color-body-gray); margin-top:4px;">Your score: <strong>90%</strong>. Feedback from Ustadha K. Nour is available.</p>
-                        </div>
-                        <div style="width:8px; height:8px; border-radius:50%; background: var(--color-primary-portal); margin-top:6px; flex-shrink:0;"></div>
-                    </div>
-                    <div class="card flex gap-4" style="border-left: 4px solid var(--color-deep-teal); background: rgba(27,107,114,0.04);">
-                        <div style="min-width:40px; height:40px; border-radius:50%; background: rgba(27,107,114,0.15); color: var(--color-deep-teal); display:flex; align-items:center; justify-content:center;">
-                            <i data-lucide="play" style="width:18px;"></i>
-                        </div>
-                        <div style="flex:1;">
-                            <div class="flex justify-between">
-                                <h4 style="font-family:'Inter'; font-size:14px;">New Lesson: Taharah — Part 3</h4>
-                                <span style="font-size:11px; color: var(--color-body-gray);">2 hours ago</span>
+                            <div style="flex:1;">
+                                <div class="flex justify-between">
+                                    <h4 style="font-family:'Inter'; font-size:14px; {{ !$isUnread ? 'color: var(--color-body-gray);' : '' }}">{{ $notify->data['title'] ?? 'System Notification' }}</h4>
+                                    <span style="font-size:11px; color: {{ $isUnread ? 'var(--color-body-gray)' : 'var(--color-mid-gray)' }};">{{ $notify->created_at->diffForHumans() }}</span>
+                                </div>
+                                <p style="font-size:13px; color: var(--color-body-gray); margin-top:4px;">{!! $notify->data['message'] ?? '' !!}</p>
                             </div>
-                            <p style="font-size:13px; color: var(--color-body-gray); margin-top:4px;">Ustadha K. Nour published a new video in Hanafi Fiqh.</p>
+                            @if($isUnread)
+                                <div style="width:8px; height:8px; border-radius:50%; background: {{ $borderColor }}; margin-top:6px; flex-shrink:0;"></div>
+                            @endif
                         </div>
-                        <div style="width:8px; height:8px; border-radius:50%; background: var(--color-deep-teal); margin-top:6px; flex-shrink:0;"></div>
-                    </div>
-                    <!-- Read -->
-                    <div class="card flex gap-4">
-                        <div style="min-width:40px; height:40px; border-radius:50%; background: var(--color-light-gray); color: var(--color-body-gray); display:flex; align-items:center; justify-content:center;">
-                            <i data-lucide="credit-card" style="width:18px;"></i>
+                    @empty
+                        <div class="card flex justify-center items-center" style="color: var(--color-body-gray); padding: 40px 0;">
+                            You have no notifications right now.
                         </div>
-                        <div style="flex:1;">
-                            <div class="flex justify-between">
-                                <h4 style="font-family:'Inter'; font-size:14px; color: var(--color-body-gray);">Payment Reminder</h4>
-                                <span style="font-size:11px; color: var(--color-mid-gray);">Mar 12</span>
-                            </div>
-                            <p style="font-size:13px; color: var(--color-body-gray); margin-top:4px;">Your next installment of $150 is due on March 25, 2026.</p>
-                        </div>
-                    </div>
-                    <div class="card flex gap-4">
-                        <div style="min-width:40px; height:40px; border-radius:50%; background: var(--color-light-gray); color: var(--color-body-gray); display:flex; align-items:center; justify-content:center;">
-                            <i data-lucide="megaphone" style="width:18px;"></i>
-                        </div>
-                        <div style="flex:1;">
-                            <div class="flex justify-between">
-                                <h4 style="font-family:'Inter'; font-size:14px; color: var(--color-body-gray);">Announcement: Ramadan Break</h4>
-                                <span style="font-size:11px; color: var(--color-mid-gray);">Mar 10</span>
-                            </div>
-                            <p style="font-size:13px; color: var(--color-body-gray); margin-top:4px;">Classes will resume on April 14 after the Ramadan break. Ramadan Mubarak!</p>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </section>
 

@@ -53,8 +53,8 @@ class CommunicationCampaigns extends Page implements HasForms
                             ->options(Program::pluck('name', 'id'))
                             ->label('Select Program')
                             ->searchable()
-                            ->required(fn (\Filament\Forms\Get $get) => $get('audience') === 'specific_program')
-                            ->visible(fn (\Filament\Forms\Get $get) => $get('audience') === 'specific_program'),
+                            ->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('audience') === 'specific_program')
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('audience') === 'specific_program'),
                         TextInput::make('subject')
                             ->required()
                             ->label('Email Subject')

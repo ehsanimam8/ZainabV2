@@ -10,6 +10,8 @@ use App\Models\Lesson;
 use App\Models\Assignment;
 use App\Models\Submission;
 use App\Models\User;
+use App\Models\Invoice;
+use App\Models\Payment;
 
 #[Layout('components.layouts.portal')]
 class PortalDashboard extends Component
@@ -18,7 +20,20 @@ class PortalDashboard extends Component
     public $activeCourses = [];
     public $feedItems = [];
     public $upcomingDeadlines = [];
-    public $userBalance = 0;
+    
+    // Notifications Profile
+    public $notifications = [];
+    public $unreadNotificationsCount = 0;
+    
+    // Transcripts
+    public $transcriptEnrollments = [];
+    
+    // Financials
+    public $invoices = [];
+    public $totalPaid = 0;
+    public $upcomingDue = 0;
+    public $nextInvoice = null;
+    public $totalDonations = 0;
     
     // Quiz State
     public $quizActive = false;
@@ -140,7 +155,40 @@ class PortalDashboard extends Component
             ->latest()
             ->get();
 
-        $this->userBalance = 0; // Can be hooked into Cashier balance/Invoice totals later
+        // 5. Billing & Invoices Tracking
+        $this->invoices = Invoice::where('user_id', $this->student->id)
+            ->with('enrollment.program')
+            ->orderBy('due_date', 'asc')
+            ->get();
+            
+        $this->totalPaid = $this->invoices->where('status', 'paid')->sum('amount');
+        $this->upcomingDue = $this->invoices->where('status', 'unpaid')->sum('amount');
+        $this->nextInvoice = $this->invoices->where('status', 'unpaid')->first();
+        
+        // Sum any payments natively tagged (for donations placeholder logic later)
+        $this->totalDonations = Payment::where('user_id', $this->student->id)->whereNull('enrollment_id')->sum('amount');
+        
+        // 6. Native Notifications Map
+        $this->notifications = $this->student->notifications()->latest()->limit(20)->get();
+        $this->unreadNotificationsCount = $this->student->unreadNotifications()->count();
+        
+        // 7. Dynamic Transcripts Binding
+        $this->transcriptEnrollments = Enrollment::where('user_id', $this->student->id)
+            ->whereIn('status', ['Completed', 'Active'])
+            ->with(['program.courses.assignments' => function($q) {
+                // Ensure assignments load their underlying submissions targeted exclusively to this user
+                $q->with(['submissions' => function($sq) {
+                    $sq->where('user_id', $this->student->id);
+                }]);
+            }])->get();
+    }
+
+    public function markAllNotificationsAsRead()
+    {
+        $this->student->unreadNotifications->markAsRead();
+        $this->notifications = $this->student->notifications()->latest()->limit(20)->get();
+        $this->unreadNotificationsCount = 0;
+        $this->dispatch('notifications-cleared');
     }
 
     public function startQuiz()

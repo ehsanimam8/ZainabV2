@@ -93,7 +93,7 @@
     <div class="custom-dash-wrapper">
         <div class="flex justify-between items-center" style="margin-bottom: 24px;">
             <div>
-                <p style="color: #4B5563;">Welcome back, Administrator.</p>
+                <p style="color: #4B5563;">Welcome back, {{ auth()->user()->roles->pluck('name')->map(function($role) { return str($role)->replace('_', ' ')->title(); })->join(', ') }}.</p>
             </div>
         </div>
 
@@ -101,13 +101,13 @@
         <div class="card flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <div style="width: 64px; height: 64px; border-radius: 8px; background: #1B6B72; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
-                    AD
+                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
                 </div>
                 <div>
-                    <h2 style="font-size: 20px; font-family: 'Inter'; font-weight: 700; margin:0;">Admin User</h2>
-                    <p style="color: #4B5563; font-size: 14px; margin:0;">Administrator at Zainab Center</p>
+                    <h2 style="font-size: 20px; font-family: 'Inter'; font-weight: 700; margin:0;">{{ auth()->user()->name }}</h2>
+                    <p style="color: #4B5563; font-size: 14px; margin:0;">System Administrator at Zainab Center</p>
                     <div class="flex gap-4" style="margin-top: 4px; font-size: 13px; color: #4B5563;">
-                        <span>admin@example.com</span>
+                        <span>{{ auth()->user()->email }}</span>
                         <span>Main Campus</span>
                     </div>
                 </div>
@@ -120,63 +120,63 @@
                 <div class="flex justify-between items-start">
                     <span class="stat-label">Students</span>
                 </div>
-                <div class="stat-value">1,024</div>
+                <div class="stat-value">{{ number_format($students) }}</div>
             </div>
             <div class="stat-card">
                 <div class="flex justify-between items-start">
                     <span class="stat-label">Teachers</span>
                 </div>
-                <div class="stat-value">48</div>
+                <div class="stat-value">{{ number_format($teachers) }}</div>
             </div>
             <div class="stat-card" style="border-left-color: #C28E18;">
                 <div class="flex justify-between items-start">
                     <span class="stat-label">Active Courses</span>
                 </div>
-                <div class="stat-value">32</div>
+                <div class="stat-value">{{ number_format($courses) }}</div>
             </div>
             <div class="stat-card" style="border-left-color: #A85D88;">
                 <div class="flex justify-between items-start">
                     <span class="stat-label">Pending Apps</span>
                 </div>
-                <div class="stat-value" style="color: #A85D88;">12</div>
+                <div class="stat-value" style="color: #A85D88;">{{ number_format($pending_apps) }}</div>
             </div>
         </div>
 
         <!-- Quick Actions Grid -->
         <h3 style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; margin-bottom: 16px; margin-top: 32px;">⚡ Quick Actions</h3>
         <div class="quick-actions-grid">
-            <div class="action-card">
+            <a href="{{ \App\Filament\Resources\Enrollments\EnrollmentResource::getUrl('create') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">👤</div>
                 <span>Enroll Student</span>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="{{ \App\Filament\Resources\Teachers\TeacherResource::getUrl('create') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">👨‍🏫</div>
                 <span>Add Teacher</span>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="{{ \App\Filament\Resources\Courses\CourseResource::getUrl('create') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">📚</div>
                 <span>Create Course</span>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="{{ \App\Filament\Resources\Announcements\AnnouncementResource::getUrl('create') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">📢</div>
                 <span>Announcement</span>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="{{ \App\Filament\Resources\Courses\CourseResource::getUrl('index') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">✅</div>
                 <span>Attendance</span>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="{{ \App\Filament\Resources\Events\EventResource::getUrl('index') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">📅</div>
                 <span>Calendar</span>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="{{ url('/admin/reportings') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">📊</div>
                 <span>Report</span>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="{{ \App\Filament\Resources\Invoices\InvoiceResource::getUrl('index') }}" class="action-card" style="text-decoration:none;">
                 <div style="font-size:24px;">💳</div>
                 <span>Billing</span>
-            </div>
+            </a>
         </div>
     </div>
 </x-filament::widget>
